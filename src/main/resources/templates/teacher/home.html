@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Teacher - Attendance Tracker</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav>
+    <span>Attendance Tracker (Teacher)</span>
+    <span>
+        <span sec:authentication="name">user</span>
+        <form th:action="@{/logout}" method="post"><button type="submit">Logout</button></form>
+    </span>
+</nav>
+<div class="container">
+    <div class="card">
+        <h1>Teacher dashboard</h1>
+        <p>Next: mark attendance for a class (AT-18).</p>
+    </div>
+</div>
+</body>
+</html>

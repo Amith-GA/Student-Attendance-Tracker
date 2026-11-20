@@ -1,0 +1,53 @@
+Issue Id,Issue Type,Summary,Description,Priority,Parent,Epic Name,Story point estimate
+1,Epic,User Authentication and Accounts,"Login, roles and account management for admin, teacher and student.",Medium,,User Authentication and Accounts,
+2,Epic,Attendance Management,Set up classes and record attendance.,Medium,,Attendance Management,
+3,Epic,Reports and Alerts,"Attendance percentages, reports, warnings and export.",Medium,,Reports and Alerts,
+4,Story,"As a teacher, I want to log in securely so that only I can mark attendance for my classes.",Acceptance criteria: Valid credentials open the teacher dashboard; wrong credentials show an error; passwords are stored hashed.,High,1,,3
+5,Sub-task,Design login page UI,,High,4,,
+6,Sub-task,Create user table with role column,,High,4,,
+7,Sub-task,Implement login with Spring Security,,High,4,,
+8,Sub-task,Test valid and invalid logins,,High,4,,
+9,Story,"As a student, I want to log in so that I can view only my own attendance.",Acceptance criteria: Student logs in and lands on student dashboard; cannot open teacher or admin pages.,High,1,,3
+10,Sub-task,Add student role and redirect after login,,High,9,,
+11,Sub-task,Restrict pages by role,,High,9,,
+12,Sub-task,Test role-based access,,High,9,,
+13,Story,"As an admin, I want to add classes, subjects and student lists so that attendance can be recorded.","Acceptance criteria: Admin can create a class, add subjects, and add or import students into a class.",High,2,,5
+14,Sub-task,Design class and student management UI,,High,13,,
+15,Sub-task,"Create class, subject and student tables",,High,13,,
+16,Sub-task,Write add/edit/list services,,High,13,,
+17,Sub-task,Test with sample class data,,High,13,,
+18,Story,"As a teacher, I want to mark attendance (Present, Absent, Late) for a class period so that records are up to date.","Acceptance criteria: Teacher selects class, subject and date, marks each student, and saves; record appears in the database.",High,2,,5
+19,Sub-task,Design attendance form UI,,High,18,,
+20,Sub-task,Create attendance table,,High,18,,
+21,Sub-task,Write save-attendance function,,High,18,,
+22,Sub-task,Test with sample class data,,High,18,,
+23,Story,"As a teacher, I want to edit attendance on the same day so that mistakes can be corrected.",Acceptance criteria: Entries can be edited only on the day they were created; older entries are read-only.,Medium,2,,3
+24,Sub-task,Add edit screen for today's records,,Medium,23,,
+25,Sub-task,Add same-day validation rule,,Medium,23,,
+26,Sub-task,Test edit allowed today and blocked later,,Medium,23,,
+27,Story,"As a user, I want a dashboard that matches my role so that I see only the options I need.","Acceptance criteria: Admin, teacher and student each see a different menu after login.",Low,1,,2
+28,Sub-task,Create role-based menu fragments,,Low,27,,
+29,Sub-task,Test dashboard for all three roles,,Low,27,,
+30,Story,"As a student, I want to see my subject-wise attendance percentage so that I know where I stand.","Acceptance criteria: Table shows each subject with attended, total and percentage; percentage never exceeds 100%.",High,3,,5
+31,Sub-task,Design student attendance view,,High,30,,
+32,Sub-task,Write percentage calculation query,,High,30,,
+33,Sub-task,Test percentage with edge cases,,High,30,,
+34,Story,"As a teacher, I want a class-wise attendance report so that I can review my class at a glance.",Acceptance criteria: Report lists every student in a class with attendance percentage for a chosen subject.,Medium,3,,5
+35,Sub-task,Design report page,,Medium,34,,
+36,Sub-task,Write class report query,,Medium,34,,
+37,Sub-task,Test report against manual count,,Medium,34,,
+38,Story,"As a student, I want a warning when my attendance is below 75% so that I can improve in time.",Acceptance criteria: A highlighted warning appears on the student dashboard for any subject below 75%.,Medium,3,,3
+39,Sub-task,Add threshold check to the percentage service,,Medium,38,,
+40,Sub-task,Add warning banner to student UI,,Medium,38,,
+41,Sub-task,"Test at 74%, 75% and 76%",,Medium,38,,
+42,Story,"As an admin, I want to export attendance as CSV so that I can share it outside the system.","Acceptance criteria: Clicking Export downloads a CSV with student, subject, date and status.",Low,3,,3
+43,Sub-task,Write CSV export service,,Low,42,,
+44,Sub-task,Add export button and download endpoint,,Low,42,,
+45,Sub-task,Test the file opens correctly in Excel,,Low,42,,
+46,Story,"As a teacher, I want to filter reports by date range so that I can check a specific period.",Acceptance criteria: Report updates to show only records between the chosen start and end dates.,Low,3,,2
+47,Sub-task,Add date pickers to report page,,Low,46,,
+48,Sub-task,Add date-range filter to the query,,Low,46,,
+49,Story,"As an admin, I want to deactivate a student account so that former students cannot log in.","Acceptance criteria: Deactivated student cannot log in, but past attendance records are kept.",Low,1,,2
+50,Sub-task,Add active flag to user table,,Low,49,,
+51,Sub-task,Block inactive users at login,,Low,49,,
+52,Sub-task,Test deactivate and reactivate,,Low,49,,
