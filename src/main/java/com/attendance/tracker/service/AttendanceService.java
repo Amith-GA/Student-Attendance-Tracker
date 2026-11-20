@@ -100,4 +100,55 @@ public class AttendanceService {
         attendance.saveAll(records);
         return records.size();
     }
+
+    /**
+     * AT-23: saved attendance may be edited only if EVERY record in it was created today.
+     * Records from an earlier day are read-only.
+     */
+    public boolean isEditable(List<AttendanceRecord> saved) {
+        if (saved.isEmpty()) {
+            return false;
+        }
+        for (AttendanceRecord record : saved) {
+            if (!record.isCreatedToday()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * AT-23: change the statuses of attendance that was saved earlier today.
+     * Same all-or-nothing rule as saving: if anything is wrong, nothing is changed.
+     * @return the number of records that were checked and updated
+     */
+    @Transactional
+    public int updateAttendance(String teacherUsername, Long subjectId, LocalDate date,
+                                Map<Long, AttendanceStatus> statusByStudentId) {
+        findSubjectOfTeacher(teacherUsername, subjectId);
+        checkDate(date);
+
+        List<AttendanceRecord> saved =
+                attendance.findBySubjectIdAndAttendanceDateOrderByStudentRollNoAsc(subjectId, date);
+        if (saved.isEmpty()) {
+            throw new IllegalArgumentException("No attendance has been saved for this date yet.");
+        }
+        if (!isEditable(saved)) {
+            throw new IllegalArgumentException(
+                    "This attendance was saved on an earlier day, so it can no longer be edited.");
+        }
+
+        // check everything first, then change, so a mistake never leaves a half-edited sheet
+        for (AttendanceRecord record : saved) {
+            if (statusByStudentId.get(record.getStudent().getId()) == null) {
+                throw new IllegalArgumentException("Please choose Present, Absent or Late for "
+                        + record.getStudent().getUser().getFullName() + ".");
+            }
+        }
+        for (AttendanceRecord record : saved) {
+            // the record is a managed object, so this change is saved when the method ends
+            record.setStatus(statusByStudentId.get(record.getStudent().getId()));
+        }
+        return saved.size();
+    }
 }

@@ -17,9 +17,36 @@
         </h2>
         <p>Date: <strong th:text="${date}"></strong></p>
 
-        <!-- Case 1: attendance for this subject and date was already saved -> show it (read only) -->
-        <div th:if="${!#lists.isEmpty(saved)}">
-            <p class="info">Attendance for this date is already saved.</p>
+        <!-- Case 1a: already saved today -> the teacher can still change it -->
+        <form th:if="${!#lists.isEmpty(saved) and editable}"
+              th:action="@{/teacher/attendance/update}" method="post">
+            <p class="info">This attendance was saved today, so you can still change it.</p>
+            <input type="hidden" name="subjectId" th:value="${subject.id}">
+            <input type="hidden" name="date" th:value="${date}">
+            <table>
+                <thead>
+                <tr><th>Roll no</th><th>Name</th><th>Present</th><th>Absent</th><th>Late</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="r : ${saved}">
+                    <td th:text="${r.student.rollNo}"></td>
+                    <td th:text="${r.student.user.fullName}"></td>
+                    <td><input type="radio" th:name="${'status_' + r.student.id}" value="PRESENT"
+                               th:checked="${r.status.name() == 'PRESENT'}"></td>
+                    <td><input type="radio" th:name="${'status_' + r.student.id}" value="ABSENT"
+                               th:checked="${r.status.name() == 'ABSENT'}"></td>
+                    <td><input type="radio" th:name="${'status_' + r.student.id}" value="LATE"
+                               th:checked="${r.status.name() == 'LATE'}"></td>
+                </tr>
+                </tbody>
+            </table>
+            <button type="submit">Save changes</button>
+            <a class="btn btn-grey" th:href="@{/teacher/attendance}">Cancel</a>
+        </form>
+
+        <!-- Case 1b: saved on an earlier day -> read only -->
+        <div th:if="${!#lists.isEmpty(saved) and !editable}">
+            <p class="info">This attendance was saved on an earlier day, so it can no longer be edited.</p>
             <table>
                 <thead>
                 <tr><th>Roll no</th><th>Name</th><th>Status</th></tr>
@@ -64,7 +91,7 @@
             <a class="btn btn-grey" th:href="@{/teacher/attendance}">Cancel</a>
         </form>
 
-        <p th:if="${!#lists.isEmpty(saved) or #lists.isEmpty(students)}">
+        <p th:if="${(!#lists.isEmpty(saved) and !editable) or (#lists.isEmpty(saved) and #lists.isEmpty(students))}">
             <a class="btn btn-grey" th:href="@{/teacher/attendance}">Back</a>
         </p>
     </div>

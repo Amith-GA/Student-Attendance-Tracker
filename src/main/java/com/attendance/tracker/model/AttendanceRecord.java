@@ -63,4 +63,12 @@ public class AttendanceRecord {
     public AttendanceStatus getStatus() { return status; }
     public AppUser getMarkedBy() { return markedBy; }
     public LocalDateTime getCreatedAt() { return createdAt; }
+
+    // Only the status can be changed later (AT-23); student, subject and date stay fixed
+    public void setStatus(AttendanceStatus status) { this.status = status; }
+
+    /** True when this record was created today. Only such records may be edited (AT-23). */
+    public boolean isCreatedToday() {
+        return createdAt.toLocalDate().equals(LocalDate.now());
+    }
 }

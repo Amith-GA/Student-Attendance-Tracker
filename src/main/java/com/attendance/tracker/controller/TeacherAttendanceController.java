@@ -74,6 +74,8 @@ public class TeacherAttendanceController {
             List<AttendanceRecord> saved =
                     attendance.findBySubjectIdAndAttendanceDateOrderByStudentRollNoAsc(subjectId, date);
             model.addAttribute("saved", saved);
+            // AT-23: saved attendance can be edited only if it was created today
+            model.addAttribute("editable", attendanceService.isEditable(saved));
             return "teacher/attendance-mark";
         } catch (IllegalArgumentException e) {
             flash.addFlashAttribute("error", e.getMessage());
@@ -100,6 +102,23 @@ public class TeacherAttendanceController {
         } catch (DataIntegrityViolationException e) {
             // the database unique rule stopped a duplicate (for example a double click on Save)
             flash.addFlashAttribute("error", "Attendance for this subject and date is already saved.");
+        }
+        return "redirect:/teacher/attendance/mark?subjectId=" + subjectId + "&date=" + date;
+    }
+
+    /** AT-23: save changes to attendance that was saved earlier today. */
+    @PostMapping("/teacher/attendance/update")
+    public String update(@RequestParam Long subjectId,
+                         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+                         @RequestParam Map<String, String> params,
+                         Principal principal, RedirectAttributes flash) {
+        try {
+            Map<Long, AttendanceStatus> statuses = readStatuses(params);
+            int count = attendanceService.updateAttendance(principal.getName(), subjectId, date, statuses);
+            flash.addFlashAttribute("message", "Attendance updated for " + count + " students on " + date + ".");
+            return "redirect:/teacher/attendance";
+        } catch (IllegalArgumentException e) {
+            flash.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/teacher/attendance/mark?subjectId=" + subjectId + "&date=" + date;
     }
