@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<!-- Menu bar shared by all admin pages. Other pages include it with th:replace. -->
+<nav th:fragment="nav">
+    <span>
+        <strong>Attendance Tracker (Admin)</strong>
+        <a th:href="@{/admin/home}">Dashboard</a>
+        <a th:href="@{/admin/classes}">Classes &amp; Subjects</a>
+        <a th:href="@{/admin/students}">Students</a>
+    </span>
+    <span>
+        <span sec:authentication="name">user</span>
+        <form th:action="@{/logout}" method="post"><button type="submit">Logout</button></form>
+    </span>
+</nav>
+</body>
+</html>

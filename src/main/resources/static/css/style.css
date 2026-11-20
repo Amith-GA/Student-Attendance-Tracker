@@ -5,8 +5,13 @@ h1, h2 { margin-top: 0; }
 label { display: block; margin: 12px 0 4px; font-weight: bold; }
 input[type=text], input[type=password] { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #bbb; border-radius: 4px; }
 button, .btn { margin-top: 16px; padding: 9px 18px; background: #2563eb; color: #fff; border: 0; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
-.error { color: #b91c1c; margin-top: 12px; }
-.info { color: #166534; margin-top: 12px; }
+select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #bbb; border-radius: 4px; background: #fff; }
+.card + .card { margin-top: 20px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 8px; border-bottom: 1px solid #e5e7eb; }
+th { background: #f1f5f9; }
+.error { color: #b91c1c; margin: 12px 0; }
+.info { color: #166534; margin: 12px 0; }
 nav { background: #1e3a8a; color: #fff; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
 nav a { color: #fff; margin-left: 16px; text-decoration: none; }
 nav form { display: inline; }
