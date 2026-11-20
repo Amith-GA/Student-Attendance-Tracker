@@ -10,6 +10,12 @@ select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #b
 table { width: 100%; border-collapse: collapse; }
 th, td { text-align: left; padding: 8px; border-bottom: 1px solid #e5e7eb; }
 th { background: #f1f5f9; }
+.btn-small { margin: 0 4px 0 0; padding: 5px 10px; font-size: 13px; background: #2563eb; color: #fff; border: 0; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
+.btn-danger { background: #dc2626; }
+.btn-grey { background: #6b7280; }
+td.actions { white-space: nowrap; }
+td.actions form { display: inline; }
+.hint { color: #6b7280; font-size: 13px; margin-bottom: 0; }
 .error { color: #b91c1c; margin: 12px 0; }
 .info { color: #166534; margin: 12px 0; }
 nav { background: #1e3a8a; color: #fff; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }

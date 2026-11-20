@@ -36,4 +36,7 @@ public class Student {
     public String getRollNo() { return rollNo; }
     public AppUser getUser() { return user; }
     public ClassRoom getClassRoom() { return classRoom; }
+
+    public void setRollNo(String rollNo) { this.rollNo = rollNo; }
+    public void setClassRoom(ClassRoom classRoom) { this.classRoom = classRoom; }
 }

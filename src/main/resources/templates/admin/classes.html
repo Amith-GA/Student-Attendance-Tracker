@@ -23,6 +23,29 @@
     </div>
 
     <div class="card">
+        <h2>Classes</h2>
+        <p th:if="${#lists.isEmpty(classes)}">No classes yet.</p>
+        <table th:unless="${#lists.isEmpty(classes)}">
+            <thead>
+            <tr><th>Class</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="c : ${classes}">
+                <td th:text="${c.name}"></td>
+                <td class="actions">
+                    <a class="btn-small" th:href="@{/admin/classes/{id}/edit(id=${c.id})}">Edit</a>
+                    <form th:action="@{/admin/classes/{id}/delete(id=${c.id})}" method="post">
+                        <button type="submit" class="btn-small btn-danger"
+                                onclick="return confirm('Delete this class? This cannot be undone.')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="hint">A class can only be deleted after its subjects and students are removed.</p>
+    </div>
+
+    <div class="card">
         <h2>Add a subject to a class</h2>
         <p th:if="${#lists.isEmpty(classes)}">Add a class first.</p>
         <form th:unless="${#lists.isEmpty(classes)}" th:action="@{/admin/subjects}" method="post">
@@ -46,22 +69,27 @@
     </div>
 
     <div class="card">
-        <h2>Classes and their subjects</h2>
-        <p th:if="${#lists.isEmpty(classes)}">No classes yet.</p>
-        <table th:unless="${#lists.isEmpty(classes)}">
+        <h2>Subjects</h2>
+        <p th:if="${#lists.isEmpty(subjects)}">No subjects added yet.</p>
+        <table th:unless="${#lists.isEmpty(subjects)}">
             <thead>
-            <tr><th>Class</th><th>Subject</th><th>Teacher</th></tr>
+            <tr><th>Class</th><th>Subject</th><th>Teacher</th><th>Actions</th></tr>
             </thead>
             <tbody>
             <tr th:each="s : ${subjects}">
                 <td th:text="${s.classRoom.name}"></td>
                 <td th:text="${s.name}"></td>
                 <td th:text="${s.teacher != null ? s.teacher.fullName : '(not assigned)'}"></td>
+                <td class="actions">
+                    <a class="btn-small" th:href="@{/admin/subjects/{id}/edit(id=${s.id})}">Edit</a>
+                    <form th:action="@{/admin/subjects/{id}/delete(id=${s.id})}" method="post">
+                        <button type="submit" class="btn-small btn-danger"
+                                onclick="return confirm('Delete this subject? This cannot be undone.')">Delete</button>
+                    </form>
+                </td>
             </tr>
             </tbody>
         </table>
-        <p th:if="${!#lists.isEmpty(classes) and #lists.isEmpty(subjects)}">No subjects added yet.</p>
-        <p>Classes: <span th:each="c, i : ${classes}" th:text="${c.name + (i.last ? '' : ', ')}"></span></p>
     </div>
 </div>
 </body>

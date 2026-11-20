@@ -47,6 +47,7 @@ public class AppUser {
     public Role getRole() { return role; }
     public boolean isActive() { return active; }
 
+    public void setUsername(String username) { this.username = username; }
     public void setPassword(String password) { this.password = password; }
     public void setFullName(String fullName) { this.fullName = fullName; }
     public void setActive(boolean active) { this.active = active; }

@@ -37,4 +37,7 @@ public class Subject {
     public String getName() { return name; }
     public ClassRoom getClassRoom() { return classRoom; }
     public AppUser getTeacher() { return teacher; }
+
+    public void setName(String name) { this.name = name; }
+    public void setTeacher(AppUser teacher) { this.teacher = teacher; }
 }

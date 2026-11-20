@@ -46,7 +46,7 @@
         <p th:if="${#lists.isEmpty(students)}">No students yet.</p>
         <table th:unless="${#lists.isEmpty(students)}">
             <thead>
-            <tr><th>Class</th><th>Roll no</th><th>Name</th><th>Username</th></tr>
+            <tr><th>Class</th><th>Roll no</th><th>Name</th><th>Username</th><th>Actions</th></tr>
             </thead>
             <tbody>
             <tr th:each="s : ${students}">
@@ -54,6 +54,13 @@
                 <td th:text="${s.rollNo}"></td>
                 <td th:text="${s.user.fullName}"></td>
                 <td th:text="${s.user.username}"></td>
+                <td class="actions">
+                    <a class="btn-small" th:href="@{/admin/students/{id}/edit(id=${s.id})}">Edit</a>
+                    <form th:action="@{/admin/students/{id}/delete(id=${s.id})}" method="post">
+                        <button type="submit" class="btn-small btn-danger"
+                                onclick="return confirm('Delete this student and their login? This cannot be undone.')">Delete</button>
+                    </form>
+                </td>
             </tr>
             </tbody>
         </table>

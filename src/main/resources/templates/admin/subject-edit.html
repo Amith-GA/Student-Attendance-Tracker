@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit subject - Attendance Tracker</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav th:replace="~{fragments/admin-nav :: nav}"></nav>
+<div class="container">
+    <p class="error" th:if="${error}" th:text="${error}"></p>
+    <div class="card">
+        <h2>Edit subject</h2>
+        <p>Class: <strong th:text="${subject.classRoom.name}"></strong></p>
+        <form th:action="@{/admin/subjects/{id}/edit(id=${subject.id})}" method="post">
+            <label for="name">Subject name</label>
+            <input type="text" id="name" name="name" th:value="${subject.name}" required>
+
+            <label for="teacherId">Teacher</label>
+            <select id="teacherId" name="teacherId">
+                <option value="">-- no teacher --</option>
+                <option th:each="t : ${teachers}" th:value="${t.id}"
+                        th:text="${t.fullName + ' (' + t.username + ')'}"
+                        th:selected="${subject.teacher != null and subject.teacher.id == t.id}"></option>
+            </select>
+            <button type="submit">Save</button>
+            <a class="btn btn-grey" th:href="@{/admin/classes}">Cancel</a>
+        </form>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Teachers - Attendance Tracker</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav th:replace="~{fragments/admin-nav :: nav}"></nav>
+<div class="container">
+
+    <!-- Success / error messages sent by the controller -->
+    <p class="info" th:if="${message}" th:text="${message}"></p>
+    <p class="error" th:if="${error}" th:text="${error}"></p>
+
+    <div class="card">
+        <h2>Add a teacher</h2>
+        <form th:action="@{/admin/teachers}" method="post">
+            <label for="fullName">Full name</label>
+            <input type="text" id="fullName" name="fullName" required>
+
+            <label for="username">Login username</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="password">Login password (at least 6 characters)</label>
+            <input type="password" id="password" name="password" required minlength="6">
+
+            <button type="submit">Add teacher</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>All teachers</h2>
+        <p th:if="${#lists.isEmpty(teachers)}">No teachers yet.</p>
+        <table th:unless="${#lists.isEmpty(teachers)}">
+            <thead>
+            <tr><th>Name</th><th>Username</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="t : ${teachers}">
+                <td th:text="${t.fullName}"></td>
+                <td th:text="${t.username}"></td>
+                <td class="actions">
+                    <a class="btn-small" th:href="@{/admin/teachers/{id}/edit(id=${t.id})}">Edit</a>
+                    <form th:action="@{/admin/teachers/{id}/delete(id=${t.id})}" method="post">
+                        <button type="submit" class="btn-small btn-danger"
+                                onclick="return confirm('Delete this teacher? Their subjects will become not assigned.')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="hint">Deleting a teacher keeps their subjects; they just become "not assigned".</p>
+    </div>
+</div>
+</body>
+</html>

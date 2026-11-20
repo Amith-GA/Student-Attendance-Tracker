@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit class - Attendance Tracker</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav th:replace="~{fragments/admin-nav :: nav}"></nav>
+<div class="container">
+    <p class="error" th:if="${error}" th:text="${error}"></p>
+    <div class="card">
+        <h2>Edit class</h2>
+        <form th:action="@{/admin/classes/{id}/edit(id=${classRoom.id})}" method="post">
+            <label for="name">Class name</label>
+            <input type="text" id="name" name="name" th:value="${classRoom.name}" required>
+            <button type="submit">Save</button>
+            <a class="btn btn-grey" th:href="@{/admin/classes}">Cancel</a>
+        </form>
+    </div>
+</div>
+</body>
+</html>

@@ -14,6 +14,9 @@ public interface UserRepository extends JpaRepository<AppUser, Long> {
 
     boolean existsByUsername(String username);
 
+    // Used when editing: the username may clash with anyone EXCEPT the user being edited
+    boolean existsByUsernameAndIdNot(String username, Long id);
+
     // Used to fill the "assign teacher" drop-down
     List<AppUser> findByRole(Role role);
 }
