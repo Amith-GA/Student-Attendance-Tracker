@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mark attendance - Attendance Tracker</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav th:replace="~{fragments/teacher-nav :: nav}"></nav>
+<div class="container">
+
+    <!-- Success / error messages sent by the controller -->
+    <p class="info" th:if="${message}" th:text="${message}"></p>
+    <p class="error" th:if="${error}" th:text="${error}"></p>
+
+    <div class="card">
+        <h2>Mark attendance</h2>
+        <p th:if="${#lists.isEmpty(subjects)}">
+            You have no subjects yet. Ask the admin to assign a subject to you.
+        </p>
+        <!-- GET form: the chosen subject and date go into the address of the next page -->
+        <form th:unless="${#lists.isEmpty(subjects)}" th:action="@{/teacher/attendance/mark}" method="get">
+            <label for="subjectId">Class and subject</label>
+            <select id="subjectId" name="subjectId" required>
+                <option value="">-- choose --</option>
+                <option th:each="s : ${subjects}" th:value="${s.id}"
+                        th:text="${s.classRoom.name + ' - ' + s.name}"></option>
+            </select>
+
+            <label for="date">Date</label>
+            <input type="date" id="date" name="date" th:value="${today}" th:max="${today}" required>
+
+            <button type="submit">Continue</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

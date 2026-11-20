@@ -19,6 +19,9 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
     // Used when deleting a teacher: their subjects become "not assigned"
     List<Subject> findByTeacherId(Long teacherId);
 
+    // The subjects a teacher may mark attendance for
+    List<Subject> findByTeacherIdOrderByClassRoomNameAscNameAsc(Long teacherId);
+
     // Sorted by class name, then subject name
     List<Subject> findAllByOrderByClassRoomNameAscNameAsc();
 }

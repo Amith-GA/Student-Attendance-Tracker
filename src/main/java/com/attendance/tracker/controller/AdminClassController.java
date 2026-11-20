@@ -8,6 +8,7 @@ import com.attendance.tracker.repository.ClassRoomRepository;
 import com.attendance.tracker.repository.StudentRepository;
 import com.attendance.tracker.repository.SubjectRepository;
 import com.attendance.tracker.repository.UserRepository;
+import com.attendance.tracker.service.SubjectService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,13 +29,16 @@ public class AdminClassController {
     private final SubjectRepository subjects;
     private final StudentRepository students;
     private final UserRepository users;
+    private final SubjectService subjectService;
 
     public AdminClassController(ClassRoomRepository classes, SubjectRepository subjects,
-                                StudentRepository students, UserRepository users) {
+                                StudentRepository students, UserRepository users,
+                                SubjectService subjectService) {
         this.classes = classes;
         this.subjects = subjects;
         this.students = students;
         this.users = users;
+        this.subjectService = subjectService;
     }
 
     // ===================== Classes =====================
@@ -188,15 +192,14 @@ public class AdminClassController {
         return "redirect:/admin/subjects/" + id + "/edit";
     }
 
-    /** Delete a subject. */
+    /** Delete a subject together with its attendance records. */
     @PostMapping("/admin/subjects/{id}/delete")
     public String deleteSubject(@PathVariable Long id, RedirectAttributes flash) {
-        Subject subject = subjects.findById(id).orElse(null);
-        if (subject == null) {
-            flash.addFlashAttribute("error", "Subject not found.");
-        } else {
-            subjects.delete(subject);
-            flash.addFlashAttribute("message", "Subject '" + subject.getName() + "' deleted.");
+        try {
+            subjectService.deleteSubject(id);
+            flash.addFlashAttribute("message", "Subject deleted.");
+        } catch (IllegalArgumentException e) {
+            flash.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/admin/classes";
     }

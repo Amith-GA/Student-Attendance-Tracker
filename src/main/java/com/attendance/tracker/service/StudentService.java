@@ -4,6 +4,7 @@ import com.attendance.tracker.model.AppUser;
 import com.attendance.tracker.model.ClassRoom;
 import com.attendance.tracker.model.Role;
 import com.attendance.tracker.model.Student;
+import com.attendance.tracker.repository.AttendanceRepository;
 import com.attendance.tracker.repository.ClassRoomRepository;
 import com.attendance.tracker.repository.StudentRepository;
 import com.attendance.tracker.repository.UserRepository;
@@ -24,13 +25,16 @@ public class StudentService {
     private final UserRepository users;
     private final StudentRepository students;
     private final ClassRoomRepository classes;
+    private final AttendanceRepository attendance;
     private final PasswordEncoder encoder;
 
     public StudentService(UserRepository users, StudentRepository students,
-                          ClassRoomRepository classes, PasswordEncoder encoder) {
+                          ClassRoomRepository classes, AttendanceRepository attendance,
+                          PasswordEncoder encoder) {
         this.users = users;
         this.students = students;
         this.classes = classes;
+        this.attendance = attendance;
         this.encoder = encoder;
     }
 
@@ -99,12 +103,13 @@ public class StudentService {
         student.setClassRoom(classRoom);
     }
 
-    /** Delete the student profile and the login account. */
+    /** Delete the student's attendance records, the student profile and the login account. */
     @Transactional
     public void deleteStudent(Long studentId) {
         Student student = students.findById(studentId)
                 .orElseThrow(() -> new IllegalArgumentException("Student not found."));
         AppUser user = student.getUser();
+        attendance.deleteByStudentId(studentId);
         students.delete(student);
         users.delete(user);
     }

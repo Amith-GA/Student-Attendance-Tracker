@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mark attendance - Attendance Tracker</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav th:replace="~{fragments/teacher-nav :: nav}"></nav>
+<div class="container">
+
+    <p class="error" th:if="${error}" th:text="${error}"></p>
+
+    <div class="card">
+        <h2>
+            <span th:text="${subject.classRoom.name + ' - ' + subject.name}"></span>
+        </h2>
+        <p>Date: <strong th:text="${date}"></strong></p>
+
+        <!-- Case 1: attendance for this subject and date was already saved -> show it (read only) -->
+        <div th:if="${!#lists.isEmpty(saved)}">
+            <p class="info">Attendance for this date is already saved.</p>
+            <table>
+                <thead>
+                <tr><th>Roll no</th><th>Name</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="r : ${saved}">
+                    <td th:text="${r.student.rollNo}"></td>
+                    <td th:text="${r.student.user.fullName}"></td>
+                    <td th:text="${r.status}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Case 2: no students in the class -->
+        <p th:if="${#lists.isEmpty(saved) and #lists.isEmpty(students)}">
+            This class has no students yet. Ask the admin to add students.
+        </p>
+
+        <!-- Case 3: show the form -->
+        <form th:if="${#lists.isEmpty(saved) and !#lists.isEmpty(students)}"
+              th:action="@{/teacher/attendance/save}" method="post">
+            <input type="hidden" name="subjectId" th:value="${subject.id}">
+            <input type="hidden" name="date" th:value="${date}">
+
+            <table>
+                <thead>
+                <tr><th>Roll no</th><th>Name</th><th>Present</th><th>Absent</th><th>Late</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="s : ${students}">
+                    <td th:text="${s.rollNo}"></td>
+                    <td th:text="${s.user.fullName}"></td>
+                    <!-- radio buttons with the same name belong together: only one can be chosen -->
+                    <td><input type="radio" th:name="${'status_' + s.id}" value="PRESENT" checked></td>
+                    <td><input type="radio" th:name="${'status_' + s.id}" value="ABSENT"></td>
+                    <td><input type="radio" th:name="${'status_' + s.id}" value="LATE"></td>
+                </tr>
+                </tbody>
+            </table>
+            <button type="submit">Save attendance</button>
+            <a class="btn btn-grey" th:href="@{/teacher/attendance}">Cancel</a>
+        </form>
+
+        <p th:if="${!#lists.isEmpty(saved) or #lists.isEmpty(students)}">
+            <a class="btn btn-grey" th:href="@{/teacher/attendance}">Back</a>
+        </p>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<!-- Menu bar shared by all teacher pages. Other pages include it with th:replace. -->
+<nav th:fragment="nav">
+    <span>
+        <strong>Attendance Tracker (Teacher)</strong>
+        <a th:href="@{/teacher/home}">Dashboard</a>
+        <a th:href="@{/teacher/attendance}">Mark attendance</a>
+    </span>
+    <span>
+        <span sec:authentication="name">user</span>
+        <form th:action="@{/logout}" method="post"><button type="submit">Logout</button></form>
+    </span>
+</nav>
+</body>
+</html>

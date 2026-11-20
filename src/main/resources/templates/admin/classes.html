@@ -84,7 +84,7 @@
                     <a class="btn-small" th:href="@{/admin/subjects/{id}/edit(id=${s.id})}">Edit</a>
                     <form th:action="@{/admin/subjects/{id}/delete(id=${s.id})}" method="post">
                         <button type="submit" class="btn-small btn-danger"
-                                onclick="return confirm('Delete this subject? This cannot be undone.')">Delete</button>
+                                onclick="return confirm('Delete this subject and all its attendance records? This cannot be undone.')">Delete</button>
                     </form>
                 </td>
             </tr>

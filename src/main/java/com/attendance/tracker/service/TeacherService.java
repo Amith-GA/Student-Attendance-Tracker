@@ -3,6 +3,7 @@ package com.attendance.tracker.service;
 import com.attendance.tracker.model.AppUser;
 import com.attendance.tracker.model.Role;
 import com.attendance.tracker.model.Subject;
+import com.attendance.tracker.repository.AttendanceRepository;
 import com.attendance.tracker.repository.SubjectRepository;
 import com.attendance.tracker.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,11 +19,14 @@ public class TeacherService {
 
     private final UserRepository users;
     private final SubjectRepository subjects;
+    private final AttendanceRepository attendance;
     private final PasswordEncoder encoder;
 
-    public TeacherService(UserRepository users, SubjectRepository subjects, PasswordEncoder encoder) {
+    public TeacherService(UserRepository users, SubjectRepository subjects,
+                          AttendanceRepository attendance, PasswordEncoder encoder) {
         this.users = users;
         this.subjects = subjects;
+        this.attendance = attendance;
         this.encoder = encoder;
     }
 
@@ -67,13 +71,17 @@ public class TeacherService {
         }
     }
 
-    /** Delete a teacher. Their subjects are kept but become "not assigned". */
+    /**
+     * Delete a teacher. Their subjects are kept but become "not assigned",
+     * and attendance they saved is kept (it just no longer shows who marked it).
+     */
     @Transactional
     public void deleteTeacher(Long teacherId) {
         AppUser teacher = findTeacher(teacherId);
         for (Subject subject : subjects.findByTeacherId(teacherId)) {
             subject.setTeacher(null);
         }
+        attendance.clearMarkedBy(teacherId);
         subjects.flush(); // make sure the subjects are updated before the teacher row disappears
         users.delete(teacher);
     }

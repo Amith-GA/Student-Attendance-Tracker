@@ -16,6 +16,9 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     // Used before deleting a class (a class with students cannot be deleted)
     boolean existsByClassRoomId(Long classRoomId);
 
+    // All students of one class, used for the attendance sheet
+    List<Student> findByClassRoomIdOrderByRollNoAsc(Long classRoomId);
+
     // Sorted by class name, then roll number
     List<Student> findAllByOrderByClassRoomNameAscRollNoAsc();
 }
