@@ -7,6 +7,9 @@ package com.attendance.tracker.service;
  */
 public class SubjectAttendance {
 
+    /** Students must have at least this much attendance (AT-38). */
+    public static final double MINIMUM_PERCENT = 75.0;
+
     private final String subjectName;
     private final int attended;
     private final int total;
@@ -37,5 +40,15 @@ public class SubjectAttendance {
         double percent = attended * 100.0 / total;
         percent = Math.round(percent * 10) / 10.0; // one decimal place
         return Math.min(percent, 100.0);           // cap at 100%
+    }
+
+    /**
+     * AT-38: true when attendance is below 75%.
+     * Uses the same rounded value that is shown on the page, so the page never
+     * shows "75.0%" together with a warning. Exactly 75% is fine.
+     * A subject with no classes yet is never flagged.
+     */
+    public boolean isBelowLimit() {
+        return total > 0 && getPercentage() < MINIMUM_PERCENT;
     }
 }

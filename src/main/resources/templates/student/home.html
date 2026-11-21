@@ -31,13 +31,23 @@
         </p>
 
         <div th:if="${student != null}">
+            <!-- AT-38: warning for every subject below 75% -->
+            <div class="warning" th:if="${!#lists.isEmpty(lowSubjects)}">
+                <strong>&#9888; Low attendance warning</strong>
+                <p>Your attendance is below <span th:text="${minimumPercent}"></span>% in:</p>
+                <ul>
+                    <li th:each="s : ${lowSubjects}"
+                        th:text="${s.subjectName + ' (' + s.percentage + '%, ' + s.attended + ' of ' + s.total + ' classes)'}"></li>
+                </ul>
+            </div>
+
             <p th:if="${#lists.isEmpty(rows)}">Your class has no subjects yet.</p>
             <table th:unless="${#lists.isEmpty(rows)}">
                 <thead>
                 <tr><th>Subject</th><th>Classes attended</th><th>Total classes</th><th>Attendance %</th></tr>
                 </thead>
                 <tbody>
-                <tr th:each="r : ${rows}">
+                <tr th:each="r : ${rows}" th:classappend="${r.belowLimit} ? 'low'">
                     <td th:text="${r.subjectName}"></td>
                     <td th:text="${r.attended}"></td>
                     <td th:text="${r.total}"></td>
