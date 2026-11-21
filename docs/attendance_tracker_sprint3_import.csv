@@ -1,0 +1,34 @@
+Issue Id,Issue Type,Summary,Description,Priority,Parent,Epic Name,Story point estimate
+1,Epic,Usability and Account Management,"Easier navigation, richer attendance views, class sheet downloads and password management for admin, teacher and student.",Medium,,Usability and Account Management,
+2,Story,"As a user, I want a left-side menu with all my options so that I can reach every page quickly.","Acceptance criteria: After login the admin, teacher and student each see a left sidebar with only their own options; the current page is highlighted; the layout also works on a small screen; the login page uses the same clean design.",High,1,,5
+3,Sub-task,Design sidebar layout and colour scheme,,High,2,,
+4,Sub-task,Build shared sidebar fragment for the three roles,,High,2,,
+5,Sub-task,Apply the new layout to all existing pages and the login page,,High,2,,
+6,Sub-task,Test sidebar links for each role and on a small screen,,High,2,,
+7,Story,"As a user, I want to change my own password and see what I type so that my account stays safe.","Acceptance criteria: Any logged-in user can change their password by entering the current password and a new password of at least 6 characters twice; a wrong current password is rejected; password fields have a show password option; the login page has a Forgot password link that tells the user to contact the admin; the admin can set a new temporary password for any student or teacher.",High,1,,4
+8,Sub-task,Build change password page and service,,High,7,,
+9,Sub-task,Add show/hide password option to login and password forms,,Medium,7,,
+10,Sub-task,Add forgot password page and admin reset password button,,Medium,7,,
+11,Sub-task,Test password change and reset and login with the new password,,High,7,,
+12,Story,"As a student, I want a dashboard and a detailed attendance page so that I can see how I am doing and what to improve.","Acceptance criteria: The student dashboard shows overall attendance percentage and the number of subjects at risk; the attendance page shows for each subject the teacher, present, late, absent, total, percentage, a status label and the classes needed to reach 75%; the student can filter by subject and by date range.",High,1,,5
+13,Sub-task,Design student dashboard and attendance page,,High,12,,
+14,Sub-task,Add present/late/absent counts and overall percentage to the report logic,,High,12,,
+15,Sub-task,Add classes needed to reach 75% calculation,,Medium,12,,
+16,Sub-task,Add subject and date range filters,,Medium,12,,
+17,Sub-task,Test numbers against manual counts,,High,12,,
+18,Story,"As a teacher, I want a dashboard and better report filters so that I can quickly find students who need attention.","Acceptance criteria: The teacher dashboard lists my classes and shows which subjects have attendance taken today; the class report shows present, late, absent, total and percentage; the report can be filtered by class and subject, date range, name or roll number, only students below 75%, and sorted.",Medium,1,,5
+19,Sub-task,Design teacher dashboard,,Medium,18,,
+20,Sub-task,Add present/late/absent columns to the class report,,Medium,18,,
+21,Sub-task,Add search and below-75% and sort filters,,Medium,18,,
+22,Sub-task,Test filters with sample data,,Medium,18,,
+23,Story,"As a teacher, I want to download an attendance sheet for one class so that I can keep or print it.","Acceptance criteria: The teacher chooses a class and subject and an optional date range and downloads an Excel file with one row per student and one column per class date marked P, A or L, plus totals and percentage; dates show correctly and never as ####; a teacher can download only their own subjects. Change request: the admin CSV export (AT-42) is removed because teachers now own the download.",Medium,1,,5
+24,Sub-task,Add Excel library and build the sheet generator,,Medium,23,,
+25,Sub-task,Add download page for the teacher,,Medium,23,,
+26,Sub-task,Remove the admin CSV export page (change request replacing AT-42),,Low,23,,
+27,Sub-task,Fix #### date display seen in the old CSV,,Medium,23,,
+28,Sub-task,Test that the downloaded file opens with correct dates and totals,,Medium,23,,
+29,Story,"As an admin, I want a summary dashboard and student filters so that I can manage many students easily.","Acceptance criteria: The admin dashboard shows the number of students, teachers, classes and subjects; the student list can be filtered by class and by status (active or deactivated) and searched by name or roll number.",Low,1,,2
+30,Sub-task,Add count tiles to the admin dashboard,,Low,29,,
+31,Sub-task,Add class and status and search filters to the student list,,Low,29,,
+32,Sub-task,Test the filters,,Low,29,,
+33,Task,"Load batch data: classes, teachers, subjects and student logins","Set up the data for the demo: classes, 6 teachers, 5 subjects and student accounts created from the college batch list. Setup work, not a user story, so no story points.",Medium,1,,
