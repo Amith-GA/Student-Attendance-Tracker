@@ -16,8 +16,40 @@
 </nav>
 <div class="container">
     <div class="card">
-        <h1>Student dashboard</h1>
-        <p>Next: your subject-wise attendance will appear here (Sprint 2).</p>
+        <h1>My attendance</h1>
+        <p>
+            <strong th:text="${fullName}"></strong>
+            <span th:if="${student != null}">
+                &middot; Roll no <span th:text="${student.rollNo}"></span>
+                &middot; Class <span th:text="${student.classRoom.name}"></span>
+            </span>
+        </p>
+
+        <!-- The admin has not added this account to a class yet -->
+        <p th:if="${student == null}">
+            You are not enrolled in a class yet. Please ask the admin.
+        </p>
+
+        <div th:if="${student != null}">
+            <p th:if="${#lists.isEmpty(rows)}">Your class has no subjects yet.</p>
+            <table th:unless="${#lists.isEmpty(rows)}">
+                <thead>
+                <tr><th>Subject</th><th>Classes attended</th><th>Total classes</th><th>Attendance %</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="r : ${rows}">
+                    <td th:text="${r.subjectName}"></td>
+                    <td th:text="${r.attended}"></td>
+                    <td th:text="${r.total}"></td>
+                    <td>
+                        <span th:if="${r.noClassesYet}">-</span>
+                        <span th:unless="${r.noClassesYet}" th:text="${r.percentage + '%'}"></span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <p class="hint">Present and Late both count as attended.</p>
+        </div>
     </div>
 </div>
 </body>

@@ -27,8 +27,5 @@ public class PageController {
         return "teacher/home";
     }
 
-    @GetMapping("/student/home")
-    public String studentHome() {
-        return "student/home";
-    }
+    // "/student/home" is handled by StudentDashboardController (it needs the student's data)
 }
