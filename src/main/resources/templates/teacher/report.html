@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Class report - Attendance Tracker</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav th:replace="~{fragments/teacher-nav :: nav}"></nav>
+<div class="container">
+
+    <p class="error" th:if="${error}" th:text="${error}"></p>
+
+    <div class="card">
+        <h2>Class attendance report</h2>
+        <p th:if="${#lists.isEmpty(subjects)}">
+            You have no subjects yet. Ask the admin to assign a subject to you.
+        </p>
+        <!-- GET form: the chosen subject goes into the address of this same page -->
+        <form th:unless="${#lists.isEmpty(subjects)}" th:action="@{/teacher/report}" method="get">
+            <label for="subjectId">Class and subject</label>
+            <select id="subjectId" name="subjectId" required>
+                <option value="">-- choose --</option>
+                <option th:each="s : ${subjects}" th:value="${s.id}"
+                        th:text="${s.classRoom.name + ' - ' + s.name}"
+                        th:selected="${subject != null and subject.id == s.id}"></option>
+            </select>
+            <button type="submit">Show report</button>
+        </form>
+    </div>
+
+    <div class="card" th:if="${subject != null}">
+        <h2 th:text="${subject.classRoom.name + ' - ' + subject.name}"></h2>
+        <p>Classes held: <strong th:text="${classesHeld}"></strong></p>
+
+        <p th:if="${#lists.isEmpty(rows)}">This class has no students yet.</p>
+        <table th:unless="${#lists.isEmpty(rows)}">
+            <thead>
+            <tr><th>Roll no</th><th>Name</th><th>Attended</th><th>Total classes</th><th>Attendance %</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="r : ${rows}" th:classappend="${r.belowLimit} ? 'low'">
+                <td th:text="${r.rollNo}"></td>
+                <td th:text="${r.studentName}"></td>
+                <td th:text="${r.attended}"></td>
+                <td th:text="${r.total}"></td>
+                <td>
+                    <span th:if="${r.noClassesYet}">-</span>
+                    <span th:unless="${r.noClassesYet}" th:text="${r.percentage + '%'}"></span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="hint">Present and Late both count as attended. Students below 75% are shown in red.</p>
+    </div>
+</div>
+</body>
+</html>

@@ -15,6 +15,9 @@ public interface AttendanceRepository extends JpaRepository<AttendanceRecord, Lo
     // Has attendance already been saved for this subject on this date?
     boolean existsBySubjectIdAndAttendanceDate(Long subjectId, LocalDate attendanceDate);
 
+    // Every attendance record of one subject (all students, all dates)
+    List<AttendanceRecord> findBySubjectId(Long subjectId);
+
     // Every attendance record of one student (all subjects, all dates)
     List<AttendanceRecord> findByStudentId(Long studentId);
 
