@@ -15,6 +15,11 @@ public interface AttendanceRepository extends JpaRepository<AttendanceRecord, Lo
     // Has attendance already been saved for this subject on this date?
     boolean existsBySubjectIdAndAttendanceDate(Long subjectId, LocalDate attendanceDate);
 
+    // Everything, sorted for the CSV export: class, subject, date, roll number
+    @Query("select r from AttendanceRecord r "
+         + "order by r.subject.classRoom.name, r.subject.name, r.attendanceDate, r.student.rollNo")
+    List<AttendanceRecord> findAllForExport();
+
     // Every attendance record of one subject (all students, all dates)
     List<AttendanceRecord> findBySubjectId(Long subjectId);
 
