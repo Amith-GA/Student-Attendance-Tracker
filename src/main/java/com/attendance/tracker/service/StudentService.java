@@ -103,6 +103,17 @@ public class StudentService {
         student.setClassRoom(classRoom);
     }
 
+    /**
+     * AT-49: switch a student's login on or off. The student and all attendance records are kept;
+     * only the login account is marked active or not (AppUserDetailsService refuses inactive users).
+     */
+    @Transactional
+    public void setActive(Long studentId, boolean active) {
+        Student student = students.findById(studentId)
+                .orElseThrow(() -> new IllegalArgumentException("Student not found."));
+        student.getUser().setActive(active);
+    }
+
     /** Delete the student's attendance records, the student profile and the login account. */
     @Transactional
     public void deleteStudent(Long studentId) {

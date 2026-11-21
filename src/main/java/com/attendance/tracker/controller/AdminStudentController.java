@@ -86,6 +86,31 @@ public class AdminStudentController {
         }
     }
 
+    /** AT-49: a former student can no longer log in. Their attendance records are kept. */
+    @PostMapping("/admin/students/{id}/deactivate")
+    public String deactivate(@PathVariable Long id, RedirectAttributes flash) {
+        try {
+            studentService.setActive(id, false);
+            flash.addFlashAttribute("message", "Student deactivated. They can no longer log in; "
+                    + "their attendance records are kept.");
+        } catch (IllegalArgumentException e) {
+            flash.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/admin/students";
+    }
+
+    /** AT-49: let a deactivated student log in again. */
+    @PostMapping("/admin/students/{id}/activate")
+    public String activate(@PathVariable Long id, RedirectAttributes flash) {
+        try {
+            studentService.setActive(id, true);
+            flash.addFlashAttribute("message", "Student activated. They can log in again.");
+        } catch (IllegalArgumentException e) {
+            flash.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/admin/students";
+    }
+
     @PostMapping("/admin/students/{id}/delete")
     public String delete(@PathVariable Long id, RedirectAttributes flash) {
         try {
