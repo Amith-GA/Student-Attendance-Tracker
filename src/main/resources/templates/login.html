@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login - Attendance Tracker</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/app.js}" defer></script>
 </head>
 <body class="login-page">
 <div class="login-box">
@@ -26,8 +27,11 @@
             <label for="password">Password</label>
             <input type="password" id="password" name="password" required>
 
+            <label class="show-password"><input type="checkbox" data-show-password> Show password</label>
+
             <button type="submit">Log in</button>
         </form>
+        <p class="links"><a th:href="@{/forgot-password}">Forgot password?</a></p>
     </div>
 </div>
 </body>

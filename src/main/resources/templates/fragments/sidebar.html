@@ -44,6 +44,14 @@
         </nav>
     </div>
 
+    <!-- Account menu: the same for every role (AT-59) -->
+    <div>
+        <div class="role-label">Account</div>
+        <nav class="menu">
+            <a th:href="@{/account/password}" th:classappend="${active == 'password'} ? 'active'">Change password</a>
+        </nav>
+    </div>
+
     <div class="user-box">
         <div class="user-name" sec:authentication="name">user</div>
         <form th:action="@{/logout}" method="post"><button type="submit">Logout</button></form>

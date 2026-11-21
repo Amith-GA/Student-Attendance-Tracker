@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Students - Attendance Tracker</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/app.js}" defer></script>
 </head>
 <body>
 <div class="app">
@@ -40,6 +41,7 @@
 
             <label for="password">Login password (at least 6 characters)</label>
             <input type="password" id="password" name="password" required minlength="6">
+            <label class="show-password"><input type="checkbox" data-show-password> Show password</label>
 
             <button type="submit">Add student</button>
         </form>
@@ -61,6 +63,7 @@
                 <td th:text="${s.user.active ? 'Active' : 'Deactivated'}"></td>
                 <td class="actions">
                     <a class="btn-small" th:href="@{/admin/students/{id}/edit(id=${s.id})}">Edit</a>
+                    <a class="btn-small btn-grey" th:href="@{/admin/users/{id}/reset-password(id=${s.user.id})}">Reset password</a>
                     <!-- AT-49: switch the login off or on; attendance records are kept either way -->
                     <form th:if="${s.user.active}" th:action="@{/admin/students/{id}/deactivate(id=${s.id})}" method="post">
                         <button type="submit" class="btn-small btn-grey"

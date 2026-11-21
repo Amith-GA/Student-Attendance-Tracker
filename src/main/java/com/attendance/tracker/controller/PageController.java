@@ -11,6 +11,12 @@ public class PageController {
         return "login";
     }
 
+    // AT-59: explains that the admin resets forgotten passwords (public page, no login needed)
+    @GetMapping("/forgot-password")
+    public String forgotPassword() {
+        return "forgot-password";
+    }
+
     // "/" has no page of its own; send logged-in users to a role page via login success handler.
     @GetMapping("/")
     public String root() {

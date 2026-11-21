@@ -44,7 +44,7 @@ public class SecurityConfig {
             // (Created here with "new" on purpose: if it were a @Component, Spring would run it twice.)
             .addFilterAfter(new ActiveUserFilter(users), SecurityContextHolderFilter.class)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/css/**").permitAll()
+                .requestMatchers("/login", "/forgot-password", "/css/**", "/js/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/teacher/**").hasRole("TEACHER")
                 .requestMatchers("/student/**").hasRole("STUDENT")

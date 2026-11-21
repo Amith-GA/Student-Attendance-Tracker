@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Teachers - Attendance Tracker</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/app.js}" defer></script>
 </head>
 <body>
 <div class="app">
@@ -28,6 +29,7 @@
 
             <label for="password">Login password (at least 6 characters)</label>
             <input type="password" id="password" name="password" required minlength="6">
+            <label class="show-password"><input type="checkbox" data-show-password> Show password</label>
 
             <button type="submit">Add teacher</button>
         </form>
@@ -46,6 +48,7 @@
                 <td th:text="${t.username}"></td>
                 <td class="actions">
                     <a class="btn-small" th:href="@{/admin/teachers/{id}/edit(id=${t.id})}">Edit</a>
+                    <a class="btn-small btn-grey" th:href="@{/admin/users/{id}/reset-password(id=${t.id})}">Reset password</a>
                     <form th:action="@{/admin/teachers/{id}/delete(id=${t.id})}" method="post">
                         <button type="submit" class="btn-small btn-danger"
                                 onclick="return confirm('Delete this teacher? Their subjects will become not assigned.')">Delete</button>
