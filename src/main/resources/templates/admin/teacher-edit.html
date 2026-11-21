@@ -2,12 +2,14 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Edit teacher - Attendance Tracker</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<nav th:replace="~{fragments/admin-nav :: nav}"></nav>
-<div class="container">
+<div class="app">
+<aside th:replace="~{fragments/sidebar :: sidebar('teachers')}"></aside>
+<main class="main">
     <p class="error" th:if="${error}" th:text="${error}"></p>
     <div class="card">
         <h2>Edit teacher</h2>
@@ -25,6 +27,7 @@
             <a class="btn btn-grey" th:href="@{/admin/teachers}">Cancel</a>
         </form>
     </div>
+</main>
 </div>
 </body>
 </html>

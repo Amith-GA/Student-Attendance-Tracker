@@ -2,18 +2,22 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Teacher - Attendance Tracker</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<nav th:replace="~{fragments/teacher-nav :: nav}"></nav>
-<div class="container">
-    <div class="card">
-        <h1>Teacher dashboard</h1>
-        <p>What would you like to do?</p>
-        <a class="btn" th:href="@{/teacher/attendance}">Mark attendance</a>
-        <a class="btn" th:href="@{/teacher/report}">Class report</a>
+<div class="app">
+<aside th:replace="~{fragments/sidebar :: sidebar('home')}"></aside>
+<main class="main">
+    <h1 class="page-title">Teacher dashboard</h1>
+    <p class="page-sub">What would you like to do?</p>
+
+    <div class="quick">
+        <a th:href="@{/teacher/attendance}"><strong>Mark attendance</strong><span>Take attendance for a class and date</span></a>
+        <a th:href="@{/teacher/report}"><strong>Class report</strong><span>See each student's attendance percentage</span></a>
     </div>
+</main>
 </div>
 </body>
 </html>

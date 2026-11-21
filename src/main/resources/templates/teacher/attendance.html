@@ -2,12 +2,14 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Mark attendance - Attendance Tracker</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<nav th:replace="~{fragments/teacher-nav :: nav}"></nav>
-<div class="container">
+<div class="app">
+<aside th:replace="~{fragments/sidebar :: sidebar('attendance')}"></aside>
+<main class="main">
 
     <!-- Success / error messages sent by the controller -->
     <p class="info" th:if="${message}" th:text="${message}"></p>
@@ -33,6 +35,7 @@
             <button type="submit">Continue</button>
         </form>
     </div>
+</main>
 </div>
 </body>
 </html>

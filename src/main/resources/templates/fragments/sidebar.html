@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<!--
+  Left-hand menu shared by ALL pages (AT-54).
+  Every page includes it with:  th:replace="~{fragments/sidebar :: sidebar('classes')}"
+  The word in brackets says which menu item to highlight.
+  sec:authorize shows each role only its own menu.
+-->
+<aside class="sidebar" th:fragment="sidebar(active)">
+    <div class="brand">
+        <span class="brand-mark">AT</span>
+        <span class="brand-name">Attendance Tracker</span>
+    </div>
+
+    <!-- Admin menu -->
+    <div sec:authorize="hasRole('ADMIN')">
+        <div class="role-label">Admin</div>
+        <nav class="menu">
+            <a th:href="@{/admin/home}" th:classappend="${active == 'home'} ? 'active'">Dashboard</a>
+            <a th:href="@{/admin/classes}" th:classappend="${active == 'classes'} ? 'active'">Classes &amp; Subjects</a>
+            <a th:href="@{/admin/teachers}" th:classappend="${active == 'teachers'} ? 'active'">Teachers</a>
+            <a th:href="@{/admin/students}" th:classappend="${active == 'students'} ? 'active'">Students</a>
+            <a th:href="@{/admin/export}" th:classappend="${active == 'export'} ? 'active'">Export</a>
+        </nav>
+    </div>
+
+    <!-- Teacher menu -->
+    <div sec:authorize="hasRole('TEACHER')">
+        <div class="role-label">Teacher</div>
+        <nav class="menu">
+            <a th:href="@{/teacher/home}" th:classappend="${active == 'home'} ? 'active'">Dashboard</a>
+            <a th:href="@{/teacher/attendance}" th:classappend="${active == 'attendance'} ? 'active'">Mark attendance</a>
+            <a th:href="@{/teacher/report}" th:classappend="${active == 'report'} ? 'active'">Class report</a>
+        </nav>
+    </div>
+
+    <!-- Student menu -->
+    <div sec:authorize="hasRole('STUDENT')">
+        <div class="role-label">Student</div>
+        <nav class="menu">
+            <a th:href="@{/student/home}" th:classappend="${active == 'home'} ? 'active'">Dashboard</a>
+        </nav>
+    </div>
+
+    <div class="user-box">
+        <div class="user-name" sec:authentication="name">user</div>
+        <form th:action="@{/logout}" method="post"><button type="submit">Logout</button></form>
+    </div>
+</aside>
+</body>
+</html>

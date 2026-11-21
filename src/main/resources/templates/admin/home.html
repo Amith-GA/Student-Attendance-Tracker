@@ -2,20 +2,24 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin - Attendance Tracker</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<nav th:replace="~{fragments/admin-nav :: nav}"></nav>
-<div class="container">
-    <div class="card">
-        <h1>Admin dashboard</h1>
-        <p>What would you like to do?</p>
-        <a class="btn" th:href="@{/admin/classes}">Manage classes &amp; subjects</a>
-        <a class="btn" th:href="@{/admin/teachers}">Manage teachers</a>
-        <a class="btn" th:href="@{/admin/students}">Manage students</a>
-        <a class="btn" th:href="@{/admin/export}">Export attendance (CSV)</a>
+<div class="app">
+<aside th:replace="~{fragments/sidebar :: sidebar('home')}"></aside>
+<main class="main">
+    <h1 class="page-title">Admin dashboard</h1>
+    <p class="page-sub">What would you like to do?</p>
+
+    <div class="quick">
+        <a th:href="@{/admin/classes}"><strong>Classes &amp; Subjects</strong><span>Add classes, subjects and assign teachers</span></a>
+        <a th:href="@{/admin/teachers}"><strong>Teachers</strong><span>Add, edit or remove teacher logins</span></a>
+        <a th:href="@{/admin/students}"><strong>Students</strong><span>Add students, deactivate or edit them</span></a>
+        <a th:href="@{/admin/export}"><strong>Export</strong><span>Download all attendance as a CSV file</span></a>
     </div>
+</main>
 </div>
 </body>
 </html>
