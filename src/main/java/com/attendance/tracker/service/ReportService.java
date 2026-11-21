@@ -9,6 +9,7 @@ import com.attendance.tracker.repository.StudentRepository;
 import com.attendance.tracker.repository.SubjectRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,10 +34,12 @@ public class ReportService {
     /**
      * AT-34: one row for EVERY student of the subject's class, with attended / total / percentage
      * for this subject. Students without any record yet show total 0.
+     * AT-46: only classes held between "from" and "to" (both included) are counted.
+     * Either date may be null, which means "no limit on that side".
      */
-    public List<StudentAttendance> classReport(Subject subject) {
+    public List<StudentAttendance> classReport(Subject subject, LocalDate from, LocalDate to) {
         List<Student> classStudents = students.findByClassRoomIdOrderByRollNoAsc(subject.getClassRoom().getId());
-        List<AttendanceRecord> records = attendance.findBySubjectId(subject.getId());
+        List<AttendanceRecord> records = recordsInRange(subject, from, to);
 
         List<StudentAttendance> rows = new ArrayList<>();
         for (Student student : classStudents) {
@@ -55,12 +58,26 @@ public class ReportService {
         return rows;
     }
 
-    /** How many different days attendance was taken for this subject. */
-    public int classesHeld(Subject subject) {
-        return (int) attendance.findBySubjectId(subject.getId()).stream()
+    /** How many different days attendance was taken for this subject (within the date range). */
+    public int classesHeld(Subject subject, LocalDate from, LocalDate to) {
+        return (int) recordsInRange(subject, from, to).stream()
                 .map(AttendanceRecord::getAttendanceDate)
                 .distinct()
                 .count();
+    }
+
+    /** AT-46: the subject's records whose date is between from and to (null = no limit). */
+    private List<AttendanceRecord> recordsInRange(Subject subject, LocalDate from, LocalDate to) {
+        List<AttendanceRecord> result = new ArrayList<>();
+        for (AttendanceRecord record : attendance.findBySubjectId(subject.getId())) {
+            LocalDate date = record.getAttendanceDate();
+            boolean afterStart = (from == null) || !date.isBefore(from);
+            boolean beforeEnd = (to == null) || !date.isAfter(to);
+            if (afterStart && beforeEnd) {
+                result.add(record);
+            }
+        }
+        return result;
     }
 
     /** AT-30: one row per subject of the student's class, with attended / total / percentage. */

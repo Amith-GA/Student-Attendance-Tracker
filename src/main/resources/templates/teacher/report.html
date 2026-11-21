@@ -25,13 +25,31 @@
                         th:text="${s.classRoom.name + ' - ' + s.name}"
                         th:selected="${subject != null and subject.id == s.id}"></option>
             </select>
+
+            <!-- AT-46: optional date range. Leave a box empty for "no limit". -->
+            <label for="from">From date (optional)</label>
+            <input type="date" id="from" name="from" th:value="${from}">
+
+            <label for="to">To date (optional)</label>
+            <input type="date" id="to" name="to" th:value="${to}">
+
             <button type="submit">Show report</button>
+            <a class="btn btn-grey" th:href="@{/teacher/report}">Clear</a>
         </form>
     </div>
 
     <div class="card" th:if="${subject != null}">
         <h2 th:text="${subject.classRoom.name + ' - ' + subject.name}"></h2>
-        <p>Classes held: <strong th:text="${classesHeld}"></strong></p>
+        <p>
+            <span th:if="${from != null or to != null}">
+                Showing
+                <span th:if="${from != null}">from <strong th:text="${from}"></strong></span>
+                <span th:if="${to != null}">to <strong th:text="${to}"></strong></span>
+                &middot;
+            </span>
+            <span th:if="${from == null and to == null}">Showing all dates &middot;</span>
+            Classes held: <strong th:text="${classesHeld}"></strong>
+        </p>
 
         <p th:if="${#lists.isEmpty(rows)}">This class has no students yet.</p>
         <table th:unless="${#lists.isEmpty(rows)}">
