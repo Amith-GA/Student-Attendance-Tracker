@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!--
+  Small pieces used on several pages. The "level" comes from AttendanceMath.level():
+  none (no classes yet), low (below 75%), borderline (75 up to 80%) or good (80% and up).
+
+  Use them like this:
+    <span th:replace="~{fragments/ui :: badge(${row.level})}"></span>
+    <div  th:replace="~{fragments/ui :: bar(${row.level}, ${row.percentage})}"></div>
+-->
+
+<!-- coloured label: Low / Borderline / Good -->
+<span th:fragment="badge(level)" class="badge"
+      th:classappend="${level == 'low'} ? 'badge-low' : (${level == 'borderline'} ? 'badge-warn' : (${level == 'good'} ? 'badge-good' : 'badge-grey'))"
+      th:text="${level == 'low'} ? 'Low' : (${level == 'borderline'} ? 'Borderline' : (${level == 'good'} ? 'Good' : 'No classes yet'))"></span>
+
+<!-- progress bar filled to the percentage -->
+<div th:fragment="bar(level, percent)" class="bar"
+     th:classappend="${level == 'low'} ? 'low' : (${level == 'borderline'} ? 'mid')">
+    <span th:style="'width:' + ${percent} + '%'"></span>
+</div>
+</body>
+</html>

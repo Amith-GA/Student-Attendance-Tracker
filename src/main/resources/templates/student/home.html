@@ -10,13 +10,10 @@
 <div class="app">
 <aside th:replace="~{fragments/sidebar :: sidebar('home')}"></aside>
 <main class="main">
-    <h1 class="page-title">My attendance</h1>
-    <p class="page-sub">
-        <strong th:text="${fullName}"></strong>
-        <span th:if="${student != null}">
-            &middot; Roll no <span th:text="${student.rollNo}"></span>
-            &middot; Class <span th:text="${student.classRoom.name}"></span>
-        </span>
+    <h1 class="page-title">Welcome, <span th:text="${fullName}"></span></h1>
+    <p class="page-sub" th:if="${student != null}">
+        Roll no <strong th:text="${student.rollNo}"></strong>
+        &middot; Class <strong th:text="${student.classRoom.name}"></strong>
     </p>
 
     <!-- The admin has not added this account to a class yet -->
@@ -33,27 +30,54 @@
                 <li th:each="s : ${lowSubjects}"
                     th:text="${s.subjectName + ' (' + s.percentage + '%, ' + s.attended + ' of ' + s.total + ' classes)'}"></li>
             </ul>
+            <p>See <a th:href="@{/student/attendance}">My attendance</a> for how many classes you need to catch up.</p>
+        </div>
+
+        <!-- AT-64: the overall picture -->
+        <div class="stats">
+            <div class="stat">
+                <div class="value" th:text="${overallTotal == 0 ? '-' : overallPercent + '%'}"></div>
+                <div class="label">Overall attendance</div>
+                <div style="margin-top:6px"><span th:replace="~{fragments/ui :: badge(${overallLevel})}"></span></div>
+            </div>
+            <div class="stat">
+                <div class="value"><span th:text="${overallAttended}"></span> / <span th:text="${overallTotal}"></span></div>
+                <div class="label">Classes attended</div>
+            </div>
+            <div class="stat">
+                <div class="value" th:text="${#lists.size(lowSubjects)}"></div>
+                <div class="label">Subjects below <span th:text="${minimumPercent}"></span>%</div>
+            </div>
+            <div class="stat">
+                <div class="value" th:text="${#lists.size(rows)}"></div>
+                <div class="label">Subjects</div>
+            </div>
         </div>
 
         <div class="card">
+            <h2>Subjects</h2>
             <p class="empty" th:if="${#lists.isEmpty(rows)}">Your class has no subjects yet.</p>
             <table th:unless="${#lists.isEmpty(rows)}">
                 <thead>
-                <tr><th>Subject</th><th>Classes attended</th><th>Total classes</th><th>Attendance %</th></tr>
+                <tr><th>Subject</th><th>Attended / Total</th><th style="width:30%">Attendance</th><th>Status</th></tr>
                 </thead>
                 <tbody>
-                <tr th:each="r : ${rows}" th:classappend="${r.belowLimit} ? 'low'">
+                <tr th:each="r : ${rows}">
                     <td th:text="${r.subjectName}"></td>
-                    <td th:text="${r.attended}"></td>
-                    <td th:text="${r.total}"></td>
+                    <td><span th:text="${r.attended}"></span> / <span th:text="${r.total}"></span></td>
                     <td>
                         <span th:if="${r.noClassesYet}">-</span>
-                        <span th:unless="${r.noClassesYet}" th:text="${r.percentage + '%'}"></span>
+                        <div th:unless="${r.noClassesYet}">
+                            <strong th:text="${r.percentage + '%'}"></strong>
+                            <div th:replace="~{fragments/ui :: bar(${r.level}, ${r.percentage})}"></div>
+                        </div>
                     </td>
+                    <td><span th:replace="~{fragments/ui :: badge(${r.level})}"></span></td>
                 </tr>
                 </tbody>
             </table>
-            <p class="hint">Present and Late both count as attended.</p>
+            <p class="hint">Present and Late both count as attended.
+                <a th:href="@{/student/attendance}">See full details &rarr;</a></p>
         </div>
     </div>
 </main>

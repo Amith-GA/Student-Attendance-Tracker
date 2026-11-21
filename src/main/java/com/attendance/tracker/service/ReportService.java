@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -70,35 +71,82 @@ public class ReportService {
     private List<AttendanceRecord> recordsInRange(Subject subject, LocalDate from, LocalDate to) {
         List<AttendanceRecord> result = new ArrayList<>();
         for (AttendanceRecord record : attendance.findBySubjectId(subject.getId())) {
-            LocalDate date = record.getAttendanceDate();
-            boolean afterStart = (from == null) || !date.isBefore(from);
-            boolean beforeEnd = (to == null) || !date.isAfter(to);
-            if (afterStart && beforeEnd) {
+            if (isInRange(record.getAttendanceDate(), from, to)) {
                 result.add(record);
             }
         }
         return result;
     }
 
-    /** AT-30: one row per subject of the student's class, with attended / total / percentage. */
+    /** AT-30: one row per subject of the student's class, over all dates. */
     public List<SubjectAttendance> subjectWiseAttendance(Student student) {
+        return subjectWiseAttendance(student, null, null, null);
+    }
+
+    /**
+     * AT-30 / AT-64: one row per subject of the student's class with the number of
+     * Present, Late and Absent classes.
+     * subjectId (optional) keeps just that subject; from / to (optional) limit the dates.
+     */
+    public List<SubjectAttendance> subjectWiseAttendance(Student student, Long subjectId,
+                                                         LocalDate from, LocalDate to) {
+        checkDateRange(from, to);
         List<Subject> classSubjects = subjects.findByClassRoomIdOrderByNameAsc(student.getClassRoom().getId());
+        if (subjectId != null && classSubjects.stream().noneMatch(s -> s.getId().equals(subjectId))) {
+            throw new IllegalArgumentException("That subject does not belong to your class.");
+        }
         List<AttendanceRecord> records = attendance.findByStudentId(student.getId());
 
         List<SubjectAttendance> rows = new ArrayList<>();
         for (Subject subject : classSubjects) {
-            int total = 0;
-            int attended = 0;
+            if (subjectId != null && !subject.getId().equals(subjectId)) {
+                continue;
+            }
+            int present = 0;
+            int late = 0;
+            int absent = 0;
             for (AttendanceRecord record : records) {
-                if (record.getSubject().getId().equals(subject.getId())) {
-                    total++;
-                    if (record.getStatus() != AttendanceStatus.ABSENT) {
-                        attended++; // PRESENT or LATE
+                if (record.getSubject().getId().equals(subject.getId())
+                        && isInRange(record.getAttendanceDate(), from, to)) {
+                    switch (record.getStatus()) {
+                        case PRESENT -> present++;
+                        case LATE -> late++;
+                        case ABSENT -> absent++;
                     }
                 }
             }
-            rows.add(new SubjectAttendance(subject.getName(), attended, total));
+            String teacher = (subject.getTeacher() == null) ? "Not assigned" : subject.getTeacher().getFullName();
+            rows.add(new SubjectAttendance(subject.getName(), teacher, present, late, absent));
         }
         return rows;
+    }
+
+    /** AT-64: the student's individual records (newest first), with the same optional filters. */
+    public List<AttendanceRecord> history(Student student, Long subjectId, LocalDate from, LocalDate to) {
+        checkDateRange(from, to);
+        List<AttendanceRecord> result = new ArrayList<>();
+        for (AttendanceRecord record : attendance.findByStudentId(student.getId())) {
+            boolean subjectOk = (subjectId == null) || record.getSubject().getId().equals(subjectId);
+            if (subjectOk && isInRange(record.getAttendanceDate(), from, to)) {
+                result.add(record);
+            }
+        }
+        result.sort(Comparator.comparing(AttendanceRecord::getAttendanceDate).reversed()
+                .thenComparing(r -> r.getSubject().getName()));
+        return result;
+    }
+
+    /** The "from" date must not be after the "to" date. */
+    private void checkDateRange(LocalDate from, LocalDate to) {
+        if (from != null && to != null && from.isAfter(to)) {
+            throw new IllegalArgumentException("The 'from' date cannot be after the 'to' date.");
+        }
+    }
+
+    /** true when the date is between from and to (both included); null means "no limit". */
+    private boolean isInRange(LocalDate date, LocalDate from, LocalDate to) {
+        boolean afterStart = (from == null) || !date.isBefore(from);
+        boolean beforeEnd = (to == null) || !date.isAfter(to);
+        return afterStart && beforeEnd;
     }
 }

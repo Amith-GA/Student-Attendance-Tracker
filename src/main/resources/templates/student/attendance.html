@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My attendance - Attendance Tracker</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="app">
+<aside th:replace="~{fragments/sidebar :: sidebar('attendance')}"></aside>
+<main class="main">
+    <h1 class="page-title">My attendance</h1>
+    <p class="page-sub">Every subject in detail, and every class you were marked for.</p>
+
+    <p class="error" th:if="${error}" th:text="${error}"></p>
+
+    <!-- The admin has not added this account to a class yet -->
+    <div class="card" th:if="${student == null}">
+        <p class="empty">You are not enrolled in a class yet. Please ask the admin.</p>
+    </div>
+
+    <div th:if="${student != null}">
+        <!-- Filters: a GET form, so the choices go into the address of this page -->
+        <div class="card">
+            <form th:action="@{/student/attendance}" method="get" class="filters">
+                <div>
+                    <label for="subjectId">Subject</label>
+                    <select id="subjectId" name="subjectId">
+                        <option value="">All subjects</option>
+                        <option th:each="s : ${classSubjects}" th:value="${s.id}" th:text="${s.name}"
+                                th:selected="${subjectId != null and subjectId == s.id}"></option>
+                    </select>
+                </div>
+                <div>
+                    <label for="from">From date</label>
+                    <input type="date" id="from" name="from" th:value="${from}">
+                </div>
+                <div>
+                    <label for="to">To date</label>
+                    <input type="date" id="to" name="to" th:value="${to}">
+                </div>
+                <div style="flex:none">
+                    <button type="submit">Show</button>
+                    <a class="btn btn-grey" th:href="@{/student/attendance}">Clear</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- AT-38: warning, only when no filter error and something is below 75% -->
+        <div class="warning" th:if="${lowSubjects != null and !#lists.isEmpty(lowSubjects)}" style="margin-top:20px">
+            <strong>&#9888; Below <span th:text="${minimumPercent}"></span>% in
+                <span th:text="${#lists.size(lowSubjects)}"></span> subject(s)</strong>
+            <p>The last column shows how many classes in a row you must attend to get back to
+                <span th:text="${minimumPercent}"></span>%.</p>
+        </div>
+
+        <div class="card" th:if="${rows != null}" style="margin-top:20px">
+            <h2>By subject</h2>
+            <p class="empty" th:if="${#lists.isEmpty(rows)}">No subjects to show.</p>
+            <table th:unless="${#lists.isEmpty(rows)}">
+                <thead>
+                <tr>
+                    <th>Subject</th><th>Teacher</th><th>Present</th><th>Late</th><th>Absent</th>
+                    <th>Total</th><th>Attendance</th><th>Status</th><th>Classes needed for 75%</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="r : ${rows}" th:classappend="${r.belowLimit} ? 'low'">
+                    <td th:text="${r.subjectName}"></td>
+                    <td th:text="${r.teacherName}"></td>
+                    <td th:text="${r.present}"></td>
+                    <td th:text="${r.late}"></td>
+                    <td th:text="${r.absent}"></td>
+                    <td th:text="${r.total}"></td>
+                    <td>
+                        <span th:if="${r.noClassesYet}">-</span>
+                        <span th:unless="${r.noClassesYet}" th:text="${r.percentage + '%'}"></span>
+                    </td>
+                    <td><span th:replace="~{fragments/ui :: badge(${r.level})}"></span></td>
+                    <td th:text="${r.belowLimit ? r.classesNeeded : '-'}"></td>
+                </tr>
+                </tbody>
+                <tfoot th:if="${#lists.size(rows) > 1}">
+                <tr>
+                    <th colspan="2">All shown subjects</th>
+                    <th th:text="${overallPresent}"></th>
+                    <th th:text="${overallLate}"></th>
+                    <th th:text="${overallAbsent}"></th>
+                    <th th:text="${overallTotal}"></th>
+                    <th th:text="${overallTotal == 0 ? '-' : overallPercent + '%'}"></th>
+                    <th><span th:replace="~{fragments/ui :: badge(${overallLevel})}"></span></th>
+                    <th></th>
+                </tr>
+                </tfoot>
+            </table>
+            <p class="hint">Present and Late both count as attended. Below 75% is Low, 75% to under 80% is Borderline, 80% and above is Good.</p>
+        </div>
+
+        <div class="card" th:if="${history != null}" style="margin-top:20px">
+            <h2>History</h2>
+            <p class="empty" th:if="${#lists.isEmpty(history)}">No attendance has been recorded for these filters.</p>
+            <table th:unless="${#lists.isEmpty(history)}">
+                <thead>
+                <tr><th>Date</th><th>Subject</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="h : ${history}">
+                    <td th:text="${#temporals.format(h.attendanceDate, 'EEE, dd MMM yyyy')}"></td>
+                    <td th:text="${h.subject.name}"></td>
+                    <td>
+                        <span class="badge" th:text="${h.status}"
+                              th:classappend="${h.status.name() == 'PRESENT'} ? 'badge-good' : (${h.status.name() == 'LATE'} ? 'badge-warn' : 'badge-low')"></span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+</div>
+</body>
+</html>

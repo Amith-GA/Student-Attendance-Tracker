@@ -41,6 +41,7 @@
         <div class="role-label">Student</div>
         <nav class="menu">
             <a th:href="@{/student/home}" th:classappend="${active == 'home'} ? 'active'">Dashboard</a>
+            <a th:href="@{/student/attendance}" th:classappend="${active == 'attendance'} ? 'active'">My attendance</a>
         </nav>
     </div>
 
