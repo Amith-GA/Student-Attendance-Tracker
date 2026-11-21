@@ -11,7 +11,28 @@
 <aside th:replace="~{fragments/sidebar :: sidebar('home')}"></aside>
 <main class="main">
     <h1 class="page-title">Admin dashboard</h1>
-    <p class="page-sub">What would you like to do?</p>
+    <p class="page-sub">An overview of your college data.</p>
+
+    <!-- AT-81: the numbers -->
+    <div class="stats">
+        <div class="stat">
+            <div class="value" th:text="${studentCount}"></div>
+            <div class="label">Students
+                <span th:if="${deactivatedCount > 0}">(<span th:text="${deactivatedCount}"></span> deactivated)</span></div>
+        </div>
+        <div class="stat">
+            <div class="value" th:text="${teacherCount}"></div>
+            <div class="label">Teachers</div>
+        </div>
+        <div class="stat">
+            <div class="value" th:text="${classCount}"></div>
+            <div class="label">Classes</div>
+        </div>
+        <div class="stat">
+            <div class="value" th:text="${subjectCount}"></div>
+            <div class="label">Subjects</div>
+        </div>
+    </div>
 
     <div class="quick">
         <a th:href="@{/admin/classes}"><strong>Classes &amp; Subjects</strong><span>Add classes, subjects and assign teachers</span></a>

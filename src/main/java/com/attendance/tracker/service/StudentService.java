@@ -12,6 +12,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Add, edit and delete students.
  * A student is stored in two tables (the login account AND the student profile),
@@ -36,6 +39,33 @@ public class StudentService {
         this.classes = classes;
         this.attendance = attendance;
         this.encoder = encoder;
+    }
+
+    /**
+     * AT-81: the student list with the admin's filters.
+     *  - classId: only this class (null = all classes)
+     *  - status:  "active", "deactivated" or anything else for all students
+     *  - search:  text that must be part of the name, roll number or username (ignores upper/lower case)
+     * The result keeps the usual order: class name, then roll number.
+     */
+    public List<Student> search(Long classId, String status, String search) {
+        String needle = (search == null) ? "" : search.trim().toLowerCase();
+        List<Student> result = new ArrayList<>();
+        for (Student student : students.findAllByOrderByClassRoomNameAscRollNoAsc()) {
+            boolean inClass = (classId == null) || student.getClassRoom().getId().equals(classId);
+            boolean active = student.getUser().isActive();
+            boolean statusOk = "active".equals(status) ? active
+                    : "deactivated".equals(status) ? !active
+                    : true;
+            boolean matches = needle.isEmpty()
+                    || student.getRollNo().toLowerCase().contains(needle)
+                    || student.getUser().getFullName().toLowerCase().contains(needle)
+                    || student.getUser().getUsername().toLowerCase().contains(needle);
+            if (inClass && statusOk && matches) {
+                result.add(student);
+            }
+        }
+        return result;
     }
 
     @Transactional

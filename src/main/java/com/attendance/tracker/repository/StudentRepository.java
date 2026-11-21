@@ -29,6 +29,9 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     // Only students whose login is still active: deactivated students are left out of new attendance sheets
     List<Student> findByClassRoomIdAndUserActiveTrueOrderByRollNoAsc(Long classRoomId);
 
+    // How many students are deactivated (shown on the admin dashboard)
+    long countByUserActiveFalse();
+
     // How many active students a class has (shown on the teacher dashboard)
     long countByClassRoomIdAndUserActiveTrue(Long classRoomId);
 

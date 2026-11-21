@@ -19,4 +19,7 @@ public interface UserRepository extends JpaRepository<AppUser, Long> {
 
     // Used to fill the "assign teacher" drop-down
     List<AppUser> findByRole(Role role);
+
+    // How many accounts have this role (shown on the admin dashboard)
+    long countByRole(Role role);
 }

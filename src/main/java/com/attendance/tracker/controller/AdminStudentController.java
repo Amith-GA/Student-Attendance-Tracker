@@ -29,10 +29,19 @@ public class AdminStudentController {
         this.studentService = studentService;
     }
 
+    /** The student list. AT-81: it can be filtered by class, by login status and by a search text. */
     @GetMapping("/admin/students")
-    public String page(Model model) {
+    public String page(@RequestParam(required = false) Long classId,
+                       @RequestParam(defaultValue = "all") String status,
+                       @RequestParam(required = false) String q,
+                       Model model) {
         model.addAttribute("classes", classes.findAllByOrderByNameAsc());
-        model.addAttribute("students", students.findAllByOrderByClassRoomNameAscRollNoAsc());
+        model.addAttribute("students", studentService.search(classId, status, q));
+        model.addAttribute("totalStudents", students.count());
+        // the chosen filters are sent back to the page so the boxes stay filled in
+        model.addAttribute("classId", classId);
+        model.addAttribute("status", status);
+        model.addAttribute("q", q);
         return "admin/students";
     }
 

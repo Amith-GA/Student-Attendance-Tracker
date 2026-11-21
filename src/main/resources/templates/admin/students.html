@@ -49,7 +49,41 @@
 
     <div class="card">
         <h2>All students</h2>
-        <p th:if="${#lists.isEmpty(students)}">No students yet.</p>
+
+        <!-- AT-81: filters. A GET form, so the choices go into the address of this page. -->
+        <form th:action="@{/admin/students}" method="get" class="filters" style="margin-bottom:16px">
+            <div>
+                <label for="filterClass">Class</label>
+                <select id="filterClass" name="classId">
+                    <option value="">All classes</option>
+                    <option th:each="c : ${classes}" th:value="${c.id}" th:text="${c.name}"
+                            th:selected="${classId != null and classId == c.id}"></option>
+                </select>
+            </div>
+            <div>
+                <label for="filterStatus">Login status</label>
+                <select id="filterStatus" name="status">
+                    <option value="all" th:selected="${status == 'all'}">All</option>
+                    <option value="active" th:selected="${status == 'active'}">Active</option>
+                    <option value="deactivated" th:selected="${status == 'deactivated'}">Deactivated</option>
+                </select>
+            </div>
+            <div>
+                <label for="filterSearch">Search name, roll no or username</label>
+                <input type="text" id="filterSearch" name="q" th:value="${q}">
+            </div>
+            <div style="flex:none">
+                <button type="submit">Filter</button>
+                <a class="btn btn-grey" th:href="@{/admin/students}">Clear</a>
+            </div>
+        </form>
+        <p class="hint" style="margin-bottom:12px" th:if="${totalStudents > 0}">
+            Showing <strong th:text="${#lists.size(students)}"></strong> of
+            <strong th:text="${totalStudents}"></strong> students.
+        </p>
+
+        <p class="empty" th:if="${totalStudents == 0}">No students yet.</p>
+        <p class="empty" th:if="${totalStudents > 0 and #lists.isEmpty(students)}">No students match these filters.</p>
         <table th:unless="${#lists.isEmpty(students)}">
             <thead>
             <tr><th>Class</th><th>Roll no</th><th>Name</th><th>Username</th><th>Login</th><th>Actions</th></tr>

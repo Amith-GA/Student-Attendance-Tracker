@@ -23,11 +23,6 @@ public class PageController {
         return "redirect:/login";
     }
 
-    @GetMapping("/admin/home")
-    public String adminHome() {
-        return "admin/home";
-    }
-
-    // "/teacher/home" is handled by TeacherDashboardController and "/student/home" by
-    // StudentDashboardController (both pages need data from the database)
+    // "/admin/home", "/teacher/home" and "/student/home" are handled by AdminDashboardController,
+    // TeacherDashboardController and StudentDashboardController (the pages need data from the database)
 }
