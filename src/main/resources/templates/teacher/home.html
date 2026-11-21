@@ -11,11 +11,50 @@
 <aside th:replace="~{fragments/sidebar :: sidebar('home')}"></aside>
 <main class="main">
     <h1 class="page-title">Teacher dashboard</h1>
-    <p class="page-sub">What would you like to do?</p>
+    <p class="page-sub">Today is <strong th:text="${#temporals.format(today, 'EEEE, dd MMMM yyyy')}"></strong></p>
 
-    <div class="quick">
-        <a th:href="@{/teacher/attendance}"><strong>Mark attendance</strong><span>Take attendance for a class and date</span></a>
-        <a th:href="@{/teacher/report}"><strong>Class report</strong><span>See each student's attendance percentage</span></a>
+    <div class="stats">
+        <div class="stat">
+            <div class="value" th:text="${#lists.size(rows)}"></div>
+            <div class="label">My subjects</div>
+        </div>
+        <div class="stat">
+            <div class="value" th:text="${takenToday}"></div>
+            <div class="label">Attendance taken today</div>
+        </div>
+        <div class="stat">
+            <div class="value" th:text="${pendingToday}"></div>
+            <div class="label">Still to take today</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>My classes</h2>
+        <p class="empty" th:if="${#lists.isEmpty(rows)}">
+            You have no subjects yet. Ask the admin to assign a subject to you.
+        </p>
+        <table th:unless="${#lists.isEmpty(rows)}">
+            <thead>
+            <tr><th>Class</th><th>Subject</th><th>Students</th><th>Classes held</th><th>Today</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="r : ${rows}">
+                <td th:text="${r.subject.classRoom.name}"></td>
+                <td th:text="${r.subject.name}"></td>
+                <td th:text="${r.students}"></td>
+                <td th:text="${r.classesHeld}"></td>
+                <td>
+                    <span th:if="${r.takenToday}" class="badge badge-good">Taken</span>
+                    <span th:unless="${r.takenToday}" class="badge badge-warn">Not yet</span>
+                </td>
+                <td class="actions">
+                    <a class="btn-small" th:href="@{/teacher/attendance/mark(subjectId=${r.subject.id}, date=${today})}"
+                       th:text="${r.takenToday ? 'View today' : 'Mark today'}"></a>
+                    <a class="btn-small btn-grey" th:href="@{/teacher/report(subjectId=${r.subject.id})}">Report</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 </main>
 </div>

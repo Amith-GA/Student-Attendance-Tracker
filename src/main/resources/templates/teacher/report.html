@@ -10,68 +10,121 @@
 <div class="app">
 <aside th:replace="~{fragments/sidebar :: sidebar('report')}"></aside>
 <main class="main">
+    <h1 class="page-title">Class report</h1>
+    <p class="page-sub">Attendance of every student in one of your subjects.</p>
 
     <p class="error" th:if="${error}" th:text="${error}"></p>
 
     <div class="card">
-        <h2>Class attendance report</h2>
-        <p th:if="${#lists.isEmpty(subjects)}">
+        <p class="empty" th:if="${#lists.isEmpty(subjects)}">
             You have no subjects yet. Ask the admin to assign a subject to you.
         </p>
-        <!-- GET form: the chosen subject goes into the address of this same page -->
+        <!-- GET form: every choice goes into the address of this same page -->
         <form th:unless="${#lists.isEmpty(subjects)}" th:action="@{/teacher/report}" method="get">
-            <label for="subjectId">Class and subject</label>
-            <select id="subjectId" name="subjectId" required>
-                <option value="">-- choose --</option>
-                <option th:each="s : ${subjects}" th:value="${s.id}"
-                        th:text="${s.classRoom.name + ' - ' + s.name}"
-                        th:selected="${subject != null and subject.id == s.id}"></option>
-            </select>
-
-            <!-- AT-46: optional date range. Leave a box empty for "no limit". -->
-            <label for="from">From date (optional)</label>
-            <input type="date" id="from" name="from" th:value="${from}">
-
-            <label for="to">To date (optional)</label>
-            <input type="date" id="to" name="to" th:value="${to}">
-
-            <button type="submit">Show report</button>
-            <a class="btn btn-grey" th:href="@{/teacher/report}">Clear</a>
+            <div class="filters">
+                <div>
+                    <label for="subjectId">Class and subject</label>
+                    <select id="subjectId" name="subjectId" required>
+                        <option value="">-- choose --</option>
+                        <option th:each="s : ${subjects}" th:value="${s.id}"
+                                th:text="${s.classRoom.name + ' - ' + s.name}"
+                                th:selected="${subject != null and subject.id == s.id}"></option>
+                    </select>
+                </div>
+                <!-- AT-46: optional date range. Leave a box empty for "no limit". -->
+                <div>
+                    <label for="from">From date</label>
+                    <input type="date" id="from" name="from" th:value="${from}">
+                </div>
+                <div>
+                    <label for="to">To date</label>
+                    <input type="date" id="to" name="to" th:value="${to}">
+                </div>
+            </div>
+            <!-- AT-70: search, sort and "only below 75%" -->
+            <div class="filters" style="margin-top:14px">
+                <div>
+                    <label for="q">Search name or roll number</label>
+                    <input type="text" id="q" name="q" th:value="${q}" placeholder="e.g. anita or 1MP24">
+                </div>
+                <div>
+                    <label for="sort">Sort by</label>
+                    <select id="sort" name="sort">
+                        <option value="roll" th:selected="${sort == 'roll'}">Roll number</option>
+                        <option value="name" th:selected="${sort == 'name'}">Name</option>
+                        <option value="lowest" th:selected="${sort == 'lowest'}">Attendance, lowest first</option>
+                        <option value="highest" th:selected="${sort == 'highest'}">Attendance, highest first</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="show-password"><input type="checkbox" name="onlyLow" value="true"
+                                                        th:checked="${onlyLow}"> Only students below 75%</label>
+                </div>
+                <div style="flex:none">
+                    <button type="submit">Show report</button>
+                    <a class="btn btn-grey" th:href="@{/teacher/report}">Clear</a>
+                </div>
+            </div>
         </form>
     </div>
 
-    <div class="card" th:if="${subject != null}">
-        <h2 th:text="${subject.classRoom.name + ' - ' + subject.name}"></h2>
-        <p>
-            <span th:if="${from != null or to != null}">
+    <div th:if="${subject != null}" style="margin-top:20px">
+        <div class="stats">
+            <div class="stat">
+                <div class="value" th:text="${classesHeld}"></div>
+                <div class="label">Classes held
+                    <span th:if="${from != null or to != null}">(in the chosen dates)</span></div>
+            </div>
+            <div class="stat">
+                <div class="value" th:text="${classesHeld == 0 ? '-' : classAverage + '%'}"></div>
+                <div class="label">Class average</div>
+            </div>
+            <div class="stat">
+                <div class="value" th:text="${belowCount}"></div>
+                <div class="label">Students below 75%</div>
+            </div>
+            <div class="stat">
+                <div class="value"><span th:text="${#lists.size(rows)}"></span> / <span th:text="${totalStudents}"></span></div>
+                <div class="label">Students shown</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 th:text="${subject.classRoom.name + ' - ' + subject.name}"></h2>
+            <p th:if="${from != null or to != null}" class="hint" style="margin-bottom:12px">
                 Showing
                 <span th:if="${from != null}">from <strong th:text="${from}"></strong></span>
                 <span th:if="${to != null}">to <strong th:text="${to}"></strong></span>
-                &middot;
-            </span>
-            <span th:if="${from == null and to == null}">Showing all dates &middot;</span>
-            Classes held: <strong th:text="${classesHeld}"></strong>
-        </p>
+            </p>
 
-        <p th:if="${#lists.isEmpty(rows)}">This class has no students yet.</p>
-        <table th:unless="${#lists.isEmpty(rows)}">
-            <thead>
-            <tr><th>Roll no</th><th>Name</th><th>Attended</th><th>Total classes</th><th>Attendance %</th></tr>
-            </thead>
-            <tbody>
-            <tr th:each="r : ${rows}" th:classappend="${r.belowLimit} ? 'low'">
-                <td th:text="${r.rollNo}"></td>
-                <td th:text="${r.studentName}"></td>
-                <td th:text="${r.attended}"></td>
-                <td th:text="${r.total}"></td>
-                <td>
-                    <span th:if="${r.noClassesYet}">-</span>
-                    <span th:unless="${r.noClassesYet}" th:text="${r.percentage + '%'}"></span>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        <p class="hint">Present and Late both count as attended. Students below 75% are shown in red.</p>
+            <p class="empty" th:if="${totalStudents == 0}">This class has no active students yet.</p>
+            <p class="empty" th:if="${totalStudents > 0 and #lists.isEmpty(rows)}">No students match these filters.</p>
+            <table th:unless="${#lists.isEmpty(rows)}">
+                <thead>
+                <tr>
+                    <th>Roll no</th><th>Name</th><th>Present</th><th>Late</th><th>Absent</th>
+                    <th>Total</th><th>Attendance</th><th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="r : ${rows}" th:classappend="${r.belowLimit} ? 'low'">
+                    <td th:text="${r.rollNo}"></td>
+                    <td th:text="${r.studentName}"></td>
+                    <td th:text="${r.present}"></td>
+                    <td th:text="${r.late}"></td>
+                    <td th:text="${r.absent}"></td>
+                    <td th:text="${r.total}"></td>
+                    <td>
+                        <span th:if="${r.noClassesYet}">-</span>
+                        <span th:unless="${r.noClassesYet}" th:text="${r.percentage + '%'}"></span>
+                    </td>
+                    <td><span th:replace="~{fragments/ui :: badge(${r.level})}"></span></td>
+                </tr>
+                </tbody>
+            </table>
+            <p class="hint">Present and Late both count as attended. Students below 75% are shown in red.
+                Deactivated students are not listed.</p>
+        </div>
     </div>
 </main>
 </div>

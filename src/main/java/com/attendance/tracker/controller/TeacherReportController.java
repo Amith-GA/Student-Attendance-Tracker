@@ -5,6 +5,7 @@ import com.attendance.tracker.repository.SubjectRepository;
 import com.attendance.tracker.repository.UserRepository;
 import com.attendance.tracker.service.AttendanceService;
 import com.attendance.tracker.service.ReportService;
+import com.attendance.tracker.service.StudentAttendance;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
- * AT-34: the teacher's class-wise report for one of their subjects.
+ * AT-34 / AT-46 / AT-70: the teacher's class-wise report for one of their subjects,
+ * with filters (dates, name or roll number search, only students below 75%) and sorting.
  * Only TEACHER users can open /teacher/** (see SecurityConfig), and a teacher can
  * only open a report for a subject the admin assigned to them.
  */
@@ -35,17 +38,23 @@ public class TeacherReportController {
         this.users = users;
     }
 
-    /** One page: the subject drop-down on top, and the report below once a subject is chosen. */
+    /** One page: the filters on top, and the report below once a subject is chosen. */
     @GetMapping("/teacher/report")
     public String report(@RequestParam(required = false) Long subjectId,
                          @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
                          @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+                         @RequestParam(required = false) String q,
+                         @RequestParam(defaultValue = "false") boolean onlyLow,
+                         @RequestParam(defaultValue = "roll") String sort,
                          Principal principal, Model model) {
         Long teacherId = users.findByUsername(principal.getName()).get().getId();
         model.addAttribute("subjects", subjects.findByTeacherIdOrderByClassRoomNameAscNameAsc(teacherId));
-        // AT-46: the chosen dates are sent back to the page so the boxes stay filled in
+        // the chosen filters are sent back to the page so the boxes stay filled in
         model.addAttribute("from", from);
         model.addAttribute("to", to);
+        model.addAttribute("q", q);
+        model.addAttribute("onlyLow", onlyLow);
+        model.addAttribute("sort", sort);
 
         if (subjectId != null) {
             try {
@@ -53,8 +62,19 @@ public class TeacherReportController {
                 if (from != null && to != null && from.isAfter(to)) {
                     throw new IllegalArgumentException("The 'from' date cannot be after the 'to' date.");
                 }
+                // the whole class first, so the tiles describe the class and not just the search result
+                List<StudentAttendance> everyone = reports.classReport(subject, from, to);
+                int below = 0;
+                for (StudentAttendance row : everyone) {
+                    if (row.isBelowLimit()) {
+                        below++;
+                    }
+                }
                 model.addAttribute("subject", subject);
-                model.addAttribute("rows", reports.classReport(subject, from, to));
+                model.addAttribute("rows", reports.filterAndSort(everyone, q, onlyLow, sort));
+                model.addAttribute("totalStudents", everyone.size());
+                model.addAttribute("belowCount", below);
+                model.addAttribute("classAverage", reports.classAverage(everyone));
                 model.addAttribute("classesHeld", reports.classesHeld(subject, from, to));
             } catch (IllegalArgumentException e) {
                 model.addAttribute("error", e.getMessage());

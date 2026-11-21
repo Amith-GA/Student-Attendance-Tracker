@@ -28,10 +28,6 @@ public class PageController {
         return "admin/home";
     }
 
-    @GetMapping("/teacher/home")
-    public String teacherHome() {
-        return "teacher/home";
-    }
-
-    // "/student/home" is handled by StudentDashboardController (it needs the student's data)
+    // "/teacher/home" is handled by TeacherDashboardController and "/student/home" by
+    // StudentDashboardController (both pages need data from the database)
 }

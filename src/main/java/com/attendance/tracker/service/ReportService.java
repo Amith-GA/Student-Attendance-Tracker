@@ -1,7 +1,6 @@
 package com.attendance.tracker.service;
 
 import com.attendance.tracker.model.AttendanceRecord;
-import com.attendance.tracker.model.AttendanceStatus;
 import com.attendance.tracker.model.Student;
 import com.attendance.tracker.model.Subject;
 import com.attendance.tracker.repository.AttendanceRepository;
@@ -39,24 +38,88 @@ public class ReportService {
      * Either date may be null, which means "no limit on that side".
      */
     public List<StudentAttendance> classReport(Subject subject, LocalDate from, LocalDate to) {
-        List<Student> classStudents = students.findByClassRoomIdOrderByRollNoAsc(subject.getClassRoom().getId());
+        // deactivated students are not listed (their records are kept in the database)
+        List<Student> classStudents =
+                students.findByClassRoomIdAndUserActiveTrueOrderByRollNoAsc(subject.getClassRoom().getId());
         List<AttendanceRecord> records = recordsInRange(subject, from, to);
 
         List<StudentAttendance> rows = new ArrayList<>();
         for (Student student : classStudents) {
-            int total = 0;
-            int attended = 0;
+            int present = 0;
+            int late = 0;
+            int absent = 0;
             for (AttendanceRecord record : records) {
                 if (record.getStudent().getId().equals(student.getId())) {
-                    total++;
-                    if (record.getStatus() != AttendanceStatus.ABSENT) {
-                        attended++; // PRESENT or LATE
+                    switch (record.getStatus()) {
+                        case PRESENT -> present++;
+                        case LATE -> late++;
+                        case ABSENT -> absent++;
                     }
                 }
             }
-            rows.add(new StudentAttendance(student.getRollNo(), student.getUser().getFullName(), attended, total));
+            rows.add(new StudentAttendance(student.getRollNo(), student.getUser().getFullName(),
+                    present, late, absent));
         }
         return rows;
+    }
+
+    /**
+     * AT-70: narrows the report down and sorts it.
+     *  - search: keeps students whose name or roll number contains the text (ignores upper/lower case)
+     *  - onlyBelowLimit: keeps only students below 75%
+     *  - sort: "roll" (default), "name", "lowest" (lowest attendance first) or "highest"
+     * Students with no class held yet always go to the end when sorting by attendance.
+     */
+    public List<StudentAttendance> filterAndSort(List<StudentAttendance> rows, String search,
+                                                 boolean onlyBelowLimit, String sort) {
+        String needle = (search == null) ? "" : search.trim().toLowerCase();
+        List<StudentAttendance> result = new ArrayList<>();
+        for (StudentAttendance row : rows) {
+            boolean matches = needle.isEmpty()
+                    || row.getRollNo().toLowerCase().contains(needle)
+                    || row.getStudentName().toLowerCase().contains(needle);
+            if (matches && (!onlyBelowLimit || row.isBelowLimit())) {
+                result.add(row);
+            }
+        }
+
+        // false sorts before true, so "no classes yet" (true) goes last
+        Comparator<StudentAttendance> noClassesLast = Comparator.comparing(StudentAttendance::isNoClassesYet);
+        String how = (sort == null) ? "roll" : sort;
+        switch (how) {
+            case "name" -> result.sort(Comparator.comparing(r -> r.getStudentName().toLowerCase()));
+            case "lowest" -> result.sort(noClassesLast.thenComparingDouble(StudentAttendance::getPercentage));
+            case "highest" -> result.sort(noClassesLast.thenComparing(
+                    Comparator.comparingDouble(StudentAttendance::getPercentage).reversed()));
+            default -> { } // "roll": the report already comes in roll number order
+        }
+        return result;
+    }
+
+    /** AT-70: the average attendance of a whole report (all attended / all classes), 0 when empty. */
+    public double classAverage(List<StudentAttendance> rows) {
+        int attended = 0;
+        int total = 0;
+        for (StudentAttendance row : rows) {
+            attended += row.getAttended();
+            total += row.getTotal();
+        }
+        return AttendanceMath.percentage(attended, total);
+    }
+
+    /**
+     * AT-70: one line per subject of the teacher for the dashboard:
+     * number of (active) students, classes held so far, and whether today's attendance is taken.
+     */
+    public List<SubjectOverview> overviewForTeacher(Long teacherId, LocalDate today) {
+        List<SubjectOverview> result = new ArrayList<>();
+        for (Subject subject : subjects.findByTeacherIdOrderByClassRoomNameAscNameAsc(teacherId)) {
+            int studentCount = (int) students.countByClassRoomIdAndUserActiveTrue(subject.getClassRoom().getId());
+            int held = classesHeld(subject, null, null);
+            boolean taken = attendance.existsBySubjectIdAndAttendanceDate(subject.getId(), today);
+            result.add(new SubjectOverview(subject, studentCount, held, taken));
+        }
+        return result;
     }
 
     /** How many different days attendance was taken for this subject (within the date range). */
