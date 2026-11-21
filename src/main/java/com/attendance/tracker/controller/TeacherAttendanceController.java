@@ -69,7 +69,7 @@ public class TeacherAttendanceController {
             model.addAttribute("subject", subject);
             model.addAttribute("date", date);
             model.addAttribute("students",
-                    students.findByClassRoomIdOrderByRollNoAsc(subject.getClassRoom().getId()));
+                    students.findByClassRoomIdAndUserActiveTrueOrderByRollNoAsc(subject.getClassRoom().getId()));
             // If attendance was already saved for this subject and date, show it instead of the form
             List<AttendanceRecord> saved =
                     attendance.findBySubjectIdAndAttendanceDateOrderByStudentRollNoAsc(subjectId, date);

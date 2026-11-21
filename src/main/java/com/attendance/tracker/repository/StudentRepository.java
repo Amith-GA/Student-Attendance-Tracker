@@ -26,6 +26,9 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     // All students of one class, used for the attendance sheet
     List<Student> findByClassRoomIdOrderByRollNoAsc(Long classRoomId);
 
+    // Only students whose login is still active: deactivated students are left out of new attendance sheets
+    List<Student> findByClassRoomIdAndUserActiveTrueOrderByRollNoAsc(Long classRoomId);
+
     // Sorted by class name, then roll number
     List<Student> findAllByOrderByClassRoomNameAscRollNoAsc();
 }

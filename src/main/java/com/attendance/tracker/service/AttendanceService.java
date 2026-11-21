@@ -82,9 +82,11 @@ public class AttendanceService {
             throw new IllegalArgumentException("Attendance for " + subject.getName() + " on "
                     + date + " is already saved.");
         }
-        List<Student> classStudents = students.findByClassRoomIdOrderByRollNoAsc(subject.getClassRoom().getId());
+        // deactivated students are not part of new attendance sheets
+        List<Student> classStudents =
+                students.findByClassRoomIdAndUserActiveTrueOrderByRollNoAsc(subject.getClassRoom().getId());
         if (classStudents.isEmpty()) {
-            throw new IllegalArgumentException("This class has no students yet.");
+            throw new IllegalArgumentException("This class has no active students yet.");
         }
 
         // every student of the class needs a status
