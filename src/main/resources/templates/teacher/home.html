@@ -51,6 +51,7 @@
                     <a class="btn-small" th:href="@{/teacher/attendance/mark(subjectId=${r.subject.id}, date=${today})}"
                        th:text="${r.takenToday ? 'View today' : 'Mark today'}"></a>
                     <a class="btn-small btn-grey" th:href="@{/teacher/report(subjectId=${r.subject.id})}">Report</a>
+                    <a class="btn-small btn-grey" th:href="@{/teacher/download/sheet.xlsx(subjectId=${r.subject.id})}">Excel</a>
                 </td>
             </tr>
             </tbody>

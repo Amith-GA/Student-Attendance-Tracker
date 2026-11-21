@@ -22,7 +22,6 @@
             <a th:href="@{/admin/classes}" th:classappend="${active == 'classes'} ? 'active'">Classes &amp; Subjects</a>
             <a th:href="@{/admin/teachers}" th:classappend="${active == 'teachers'} ? 'active'">Teachers</a>
             <a th:href="@{/admin/students}" th:classappend="${active == 'students'} ? 'active'">Students</a>
-            <a th:href="@{/admin/export}" th:classappend="${active == 'export'} ? 'active'">Export</a>
         </nav>
     </div>
 
@@ -33,6 +32,7 @@
             <a th:href="@{/teacher/home}" th:classappend="${active == 'home'} ? 'active'">Dashboard</a>
             <a th:href="@{/teacher/attendance}" th:classappend="${active == 'attendance'} ? 'active'">Mark attendance</a>
             <a th:href="@{/teacher/report}" th:classappend="${active == 'report'} ? 'active'">Class report</a>
+            <a th:href="@{/teacher/download}" th:classappend="${active == 'download'} ? 'active'">Download sheet</a>
         </nav>
     </div>
 

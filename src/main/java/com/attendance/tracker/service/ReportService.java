@@ -131,7 +131,7 @@ public class ReportService {
     }
 
     /** AT-46: the subject's records whose date is between from and to (null = no limit). */
-    private List<AttendanceRecord> recordsInRange(Subject subject, LocalDate from, LocalDate to) {
+    public List<AttendanceRecord> recordsInRange(Subject subject, LocalDate from, LocalDate to) {
         List<AttendanceRecord> result = new ArrayList<>();
         for (AttendanceRecord record : attendance.findBySubjectId(subject.getId())) {
             if (isInRange(record.getAttendanceDate(), from, to)) {

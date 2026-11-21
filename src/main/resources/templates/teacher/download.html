@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Download sheet - Attendance Tracker</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="app">
+<aside th:replace="~{fragments/sidebar :: sidebar('download')}"></aside>
+<main class="main">
+    <h1 class="page-title">Download attendance sheet</h1>
+    <p class="page-sub">Get the attendance of one class as an Excel file.</p>
+
+    <p class="error" th:if="${error}" th:text="${error}"></p>
+
+    <div class="card">
+        <p class="empty" th:if="${#lists.isEmpty(subjects)}">
+            You have no subjects yet. Ask the admin to assign a subject to you.
+        </p>
+        <!-- GET form: the browser asks for the file with these choices in the address -->
+        <form th:unless="${#lists.isEmpty(subjects)}" th:action="@{/teacher/download/sheet.xlsx}" method="get">
+            <div class="filters">
+                <div>
+                    <label for="subjectId">Class and subject</label>
+                    <select id="subjectId" name="subjectId" required>
+                        <option value="">-- choose --</option>
+                        <option th:each="s : ${subjects}" th:value="${s.id}"
+                                th:text="${s.classRoom.name + ' - ' + s.name}"></option>
+                    </select>
+                </div>
+                <div>
+                    <label for="from">From date (optional)</label>
+                    <input type="date" id="from" name="from">
+                </div>
+                <div>
+                    <label for="to">To date (optional)</label>
+                    <input type="date" id="to" name="to">
+                </div>
+                <div style="flex:none">
+                    <button type="submit">Download Excel sheet</button>
+                </div>
+            </div>
+        </form>
+        <p class="hint" style="margin-top:14px">
+            The sheet has one row per student and one column for every day a class was held:
+            P = present, L = late, A = absent. At the end of each row you get the totals and the attendance
+            percentage. Deactivated students are not included.
+        </p>
+    </div>
+</main>
+</div>
+</body>
+</html>
