@@ -75,15 +75,22 @@
             <div style="flex:none">
                 <button type="submit">Filter</button>
                 <a class="btn btn-grey" th:href="@{/admin/students}">Clear</a>
+                <a class="btn btn-grey" th:href="@{/admin/students(list='all')}">Show all</a>
             </div>
         </form>
-        <p class="hint" style="margin-bottom:12px" th:if="${totalStudents > 0}">
+
+        <!-- The list stays hidden until a filter or "Show all" is used -->
+        <p class="empty" th:if="${!showList and totalStudents > 0}">
+            There are <strong th:text="${totalStudents}"></strong> students.
+            Choose a class, a status or type a search, then press Filter, or press Show all.
+        </p>
+        <p class="hint" style="margin-bottom:12px" th:if="${showList and totalStudents > 0}">
             Showing <strong th:text="${#lists.size(students)}"></strong> of
             <strong th:text="${totalStudents}"></strong> students.
         </p>
 
         <p class="empty" th:if="${totalStudents == 0}">No students yet.</p>
-        <p class="empty" th:if="${totalStudents > 0 and #lists.isEmpty(students)}">No students match these filters.</p>
+        <p class="empty" th:if="${showList and totalStudents > 0 and #lists.isEmpty(students)}">No students match these filters.</p>
         <table th:unless="${#lists.isEmpty(students)}">
             <thead>
             <tr><th>Class</th><th>Roll no</th><th>Name</th><th>Username</th><th>Login</th><th>Actions</th></tr>

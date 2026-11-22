@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 /**
  * AT-13: admin adds, edits and deletes students. Each student also has a login account.
  */
@@ -34,9 +36,15 @@ public class AdminStudentController {
     public String page(@RequestParam(required = false) Long classId,
                        @RequestParam(defaultValue = "all") String status,
                        @RequestParam(required = false) String q,
+                       @RequestParam(required = false) String list,
                        Model model) {
         model.addAttribute("classes", classes.findAllByOrderByNameAsc());
-        model.addAttribute("students", studentService.search(classId, status, q));
+        // The list is long, so it stays hidden until the admin chooses a class, a status or a search text,
+        // or asks for everyone (the Students tile on the dashboard sends list=all).
+        boolean showList = "all".equals(list) || classId != null || !"all".equals(status)
+                || (q != null && !q.isBlank());
+        model.addAttribute("showList", showList);
+        model.addAttribute("students", showList ? studentService.search(classId, status, q) : List.of());
         model.addAttribute("totalStudents", students.count());
         // the chosen filters are sent back to the page so the boxes stay filled in
         model.addAttribute("classId", classId);

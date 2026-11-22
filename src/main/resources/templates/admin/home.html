@@ -13,25 +13,26 @@
     <h1 class="page-title">Admin dashboard</h1>
     <p class="page-sub">An overview of your college data.</p>
 
-    <!-- AT-81: the numbers -->
+    <!-- AT-81: the numbers. Each tile opens the matching list. -->
     <div class="stats">
-        <div class="stat">
+        <a class="stat" th:href="@{/admin/students(list='all')}">
             <div class="value" th:text="${studentCount}"></div>
             <div class="label">Students
                 <span th:if="${deactivatedCount > 0}">(<span th:text="${deactivatedCount}"></span> deactivated)</span></div>
-        </div>
-        <div class="stat">
+        </a>
+        <a class="stat" th:href="@{/admin/teachers}">
             <div class="value" th:text="${teacherCount}"></div>
             <div class="label">Teachers</div>
-        </div>
-        <div class="stat">
+        </a>
+        <a class="stat" th:href="@{/admin/classes}">
             <div class="value" th:text="${classCount}"></div>
             <div class="label">Classes</div>
-        </div>
-        <div class="stat">
+        </a>
+        <a class="stat" th:href="@{/admin/subjects}">
             <div class="value" th:text="${subjectCount}"></div>
-            <div class="label">Subjects</div>
-        </div>
+            <div class="label">Subjects
+                <span th:if="${subjectEntries != subjectCount}">(in <span th:text="${subjectEntries}"></span> classes)</span></div>
+        </a>
     </div>
 
     <div class="quick">

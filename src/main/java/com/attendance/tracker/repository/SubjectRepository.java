@@ -27,4 +27,7 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
 
     // Sorted by class name, then subject name
     List<Subject> findAllByOrderByClassRoomNameAscNameAsc();
+
+    // Sorted by subject name, then class name (the admin Subjects list: one subject, its classes together)
+    List<Subject> findAllByOrderByNameAscClassRoomNameAsc();
 }

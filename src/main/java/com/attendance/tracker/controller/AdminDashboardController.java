@@ -35,7 +35,11 @@ public class AdminDashboardController {
         model.addAttribute("deactivatedCount", students.countByUserActiveFalse());
         model.addAttribute("teacherCount", users.countByRole(Role.TEACHER));
         model.addAttribute("classCount", classes.count());
-        model.addAttribute("subjectCount", subjects.count());
+        // a subject belongs to one class, so the same name is stored once per class:
+        // count the different names, and also the class-subject entries
+        model.addAttribute("subjectCount", subjects.findAll().stream()
+                .map(s -> s.getName().trim().toLowerCase()).distinct().count());
+        model.addAttribute("subjectEntries", subjects.count());
         return "admin/home";
     }
 }

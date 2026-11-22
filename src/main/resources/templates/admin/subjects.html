@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Subjects - Attendance Tracker</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="app">
+<aside th:replace="~{fragments/sidebar :: sidebar('classes')}"></aside>
+<main class="main">
+    <h1 class="page-title">Subjects</h1>
+    <p class="page-sub">Every subject with the class it is taught in and its teacher.
+        The same subject appears once for each class that has it.</p>
+
+    <div class="card">
+        <form th:action="@{/admin/subjects}" method="get" class="filters" style="margin-bottom:16px">
+            <div>
+                <label for="filterClass">Class</label>
+                <select id="filterClass" name="classId">
+                    <option value="">All classes</option>
+                    <option th:each="c : ${classes}" th:value="${c.id}" th:text="${c.name}"
+                            th:selected="${classId != null and classId == c.id}"></option>
+                </select>
+            </div>
+            <div style="flex:none">
+                <button type="submit">Filter</button>
+                <a class="btn btn-grey" th:href="@{/admin/subjects}">Clear</a>
+            </div>
+        </form>
+        <p class="hint" style="margin-bottom:12px" th:if="${totalSubjects > 0}">
+            Showing <strong th:text="${#lists.size(subjects)}"></strong> of
+            <strong th:text="${totalSubjects}"></strong>.
+        </p>
+
+        <p class="empty" th:if="${totalSubjects == 0}">No subjects yet. Add them on the
+            <a th:href="@{/admin/classes}">Classes &amp; Subjects</a> page.</p>
+        <p class="empty" th:if="${totalSubjects > 0 and #lists.isEmpty(subjects)}">No subjects in this class.</p>
+        <table th:unless="${#lists.isEmpty(subjects)}">
+            <thead>
+            <tr><th>Subject</th><th>Class</th><th>Teacher</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="s : ${subjects}">
+                <td th:text="${s.name}"></td>
+                <td th:text="${s.classRoom.name}"></td>
+                <td th:text="${s.teacher != null ? s.teacher.fullName : '(not assigned)'}"></td>
+                <td class="actions">
+                    <a class="btn-small" th:href="@{/admin/subjects/{id}/edit(id=${s.id})}">Edit</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="hint">To add or delete subjects, use <a th:href="@{/admin/classes}">Classes &amp; Subjects</a>.</p>
+    </div>
+</main>
+</div>
+</body>
+</html>
